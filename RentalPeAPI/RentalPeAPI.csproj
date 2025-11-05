@@ -76,7 +76,6 @@
       <Folder Include="Report\Interfaces\ACL\" />
       <Folder Include="Report\Interfaces\REST\Resources\" />
       <Folder Include="Report\Interfaces\REST\Transform\" />
-      <Folder Include="User\" />
       <Folder Include="User\Application\ACL\" />
       <Folder Include="User\Application\Internal\CommandServices\" />
       <Folder Include="User\Application\Internal\QueryServices\" />

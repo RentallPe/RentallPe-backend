@@ -3,4 +3,4 @@
 GET {{RentalPeAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+

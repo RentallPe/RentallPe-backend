@@ -50,10 +50,16 @@ public class UsersController : ControllerBase
         }
     }
     
-    [HttpGet("{userId}")]
+    [HttpGet("{userId:guid}")] 
     public async Task<IActionResult> GetUserById(Guid userId)
     {
         
-        return Ok($"Obteniendo usuario {userId}"); 
+        var query = new GetUserByIdQuery(userId);
+
+        
+        var userDto = await _mediator.Send(query);
+
+        
+        return userDto is null ? NotFound() : Ok(userDto);
     }
 }

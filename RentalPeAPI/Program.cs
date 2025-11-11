@@ -7,7 +7,7 @@ using RentalPeAPI.User.Infrastructure.Persistence.EFC;
 using RentalPeAPI.User.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.User.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
-
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +22,7 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<UserDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)) 
 );
 
@@ -45,7 +45,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<UserDbContext>();
+        var context = services.GetRequiredService<AppDbContext>();
         context.Database.Migrate(); 
     }
     catch (Exception ex)

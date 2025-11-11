@@ -1,13 +1,13 @@
 ﻿using RentalPeAPI.User.Domain.Repositories;
 using RentalPeAPI.User.Infrastructure.Persistence.EFC; 
-
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 namespace RentalPeAPI.User.Infrastructure.Persistence.EFC.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly UserDbContext _context;
+    private readonly AppDbContext _context;
 
-    public UnitOfWork(UserDbContext context)
+    public UnitOfWork(AppDbContext context)
     {
         _context = context;
     }

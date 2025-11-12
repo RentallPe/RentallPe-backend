@@ -9,17 +9,31 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// 🔹 Aquí registras tus servicios de aplicación y repositorios
+// 🔹 Registramos servicios de dominio y aplicación
 builder.Services.AddScoped<SpaceAppService>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 
-// 🔹 Agregamos el DbContext
+// 🔹 Agregamos el DbContext con MySQL (usando la cadena de conexión del appsettings.json)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<PropertyDbContext>(options =>
-        options.UseInMemoryDatabase("RentalPeDB") // o UseSqlServer, UseNpgsql, etc.
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
 
-// OpenAPI (Swagger)
+// 🔹 Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// 🔹 Configuración del pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+app.Run();

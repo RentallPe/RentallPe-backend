@@ -46,12 +46,7 @@ public class SpaceConfiguration : IEntityTypeConfiguration<Space>
                 .HasColumnName("OwnerId")
                 .IsRequired();
         });
-
-        // Relación con Services
-        builder.HasMany(s => s.Services)
-            .WithOne()
-            .HasForeignKey("SpaceId")
-            .OnDelete(DeleteBehavior.Cascade);
+        
 
         // Configuración de Services
         builder.OwnsMany(s => s.Services, service =>

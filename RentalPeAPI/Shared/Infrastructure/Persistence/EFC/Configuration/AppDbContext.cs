@@ -1,9 +1,8 @@
 using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
-using RentalPeAPI.User.Domain;
-using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.User.Domain;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -11,6 +10,7 @@ namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 /// Represents the application's database context using Entity Framework Core.
 /// </summary>
 /// <param name="options">The options for configuring the context.</param>
+ 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     /// <summary>
@@ -40,11 +40,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
       //builder.ApplyProfilesConfiguration();
         
         //Payment Context
+        
         builder.ApplyPaymentsConfiguration();
         
-      
-      builder.ApplyConfiguration(new UserConfiguration());
-        // Use snake case for database objects and pluralization for table names
         builder.UseSnakeCaseNamingConvention();
     }
 }

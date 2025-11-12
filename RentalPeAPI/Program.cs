@@ -1,8 +1,15 @@
+// --- USINGS NECESARIOS ---
 using Microsoft.EntityFrameworkCore;
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; // <-- Para AppDbContext
+using RentalPeAPI.Shared.Domain.Repositories; // <-- Para IUnitOfWork
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories; // <-- Para UnitOfWork
+
+// Usings del BC de Property (que ya tenías)
 using RentalPeAPI.Property.Application.Services;
 using RentalPeAPI.Property.Domain.Repositories;
 using RentalPeAPI.Property.Infrastructure.Persistence;
-using RentalPeAPI.Property.Infrastructure.Persistence.EFCore.Repositories;
+using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Repositories;
+// --- FIN DE USINGS ---
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +20,55 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<SpaceAppService>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 
-// 🔹 Agregamos el DbContext
-builder.Services.AddDbContext<PropertyDbContext>(options =>
-        options.UseInMemoryDatabase("RentalPeDB") // o UseSqlServer, UseNpgsql, etc.
-);
+// 🔹 Registra el UnitOfWork compartido (¡necesario para tu SpaceAppService!)
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// OpenAPI (Swagger)
+// 🔹 Agregamos el DbContext (Tu código ya estaba bien)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new Exception("Database connection string not found.");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+    if (builder.Environment.IsDevelopment())
+    {
+        options.LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
+    }
+});
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate(); 
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al migrar la base de datos.");
+    }
+}
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+app.Run();

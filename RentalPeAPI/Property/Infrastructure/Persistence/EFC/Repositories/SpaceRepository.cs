@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Property.Domain.Aggregates;
 using RentalPeAPI.Property.Domain.Repositories;
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
-namespace RentalPeAPI.Property.Infrastructure.Persistence.EFCore.Repositories;
+namespace RentalPeAPI.Property.Infrastructure.Persistence.EFC.Repositories;
 
 public class SpaceRepository : ISpaceRepository
 {
-    private readonly PropertyDbContext _context;
+    private readonly AppDbContext _context;
 
-    public SpaceRepository(PropertyDbContext context)
+    public SpaceRepository(AppDbContext context)
     {
         _context = context;
     }
@@ -46,8 +47,5 @@ public class SpaceRepository : ISpaceRepository
         _context.Spaces.Remove(space);
     }
 
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
+    
 }

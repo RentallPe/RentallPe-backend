@@ -3,16 +3,20 @@ using RentalPeAPI.Property.Application.Internal.Dtos;
 using RentalPeAPI.Property.Application.Internal.QueryServices;
 using RentalPeAPI.Property.Domain.Aggregates;
 using RentalPeAPI.Property.Domain.Repositories;
+using RentalPeAPI.Shared.Domain.Repositories; // <-- ¡Asegúrate de tener este using!
 
 namespace RentalPeAPI.Property.Application.Services;
 
 public class SpaceAppService
 {
     private readonly ISpaceRepository _spaceRepository;
+    private readonly IUnitOfWork _unitOfWork; // <-- 1. Añade el Unit of Work
 
-    public SpaceAppService(ISpaceRepository spaceRepository)
+    // 2. Inyecta el IUnitOfWork en el constructor
+    public SpaceAppService(ISpaceRepository spaceRepository, IUnitOfWork unitOfWork)
     {
         _spaceRepository = spaceRepository;
+        _unitOfWork = unitOfWork; 
     }
 
     public async Task<SpaceDto> CreateSpaceAsync(CreateSpaceCommand command)
@@ -28,7 +32,9 @@ public class SpaceAppService
         );
 
         await _spaceRepository.AddAsync(space);
-        await _spaceRepository.SaveChangesAsync();
+        
+        // --- ¡ARREGLO! Usa el Unit of Work ---
+        await _unitOfWork.CompleteAsync(); 
 
         return ToDto(space);
     }
@@ -50,7 +56,8 @@ public class SpaceAppService
             command.Status
         );
 
-        await _spaceRepository.SaveChangesAsync();
+        // --- ¡ARREGLO! Usa el Unit of Work ---
+        await _unitOfWork.CompleteAsync(); 
 
         return ToDto(space);
     }
@@ -61,9 +68,13 @@ public class SpaceAppService
         if (space == null) return false;
 
         _spaceRepository.Remove(space);
-        await _spaceRepository.SaveChangesAsync();
+        
+        // --- ¡ARREGLO! Usa el Unit of Work ---
+        await _unitOfWork.CompleteAsync(); 
         return true;
     }
+
+    // --- Los métodos GET no cambian (no guardan nada) ---
 
     public async Task<SpaceDto?> GetSpaceByIdAsync(GetSpaceByIdQuery query)
     {
@@ -85,9 +96,9 @@ public class SpaceAppService
             Name = space.Name,
             Description = space.Description,
             PricePerHour = space.PricePerHour,
-            Type = space.Type.ToString(), // Enum a string
-            Location = space.Location?.Address ?? string.Empty, // tu ValueObject Location
-            OwnerId = space.OwnerId.Value, // OwnerId es un VO
+            Type = space.Type.ToString(), 
+            Location = space.Location?.Address ?? string.Empty, 
+            OwnerId = space.OwnerId.Value, 
             Services = space.Services.Select(s => new ServiceDto
             {
                 Id = s.Id,

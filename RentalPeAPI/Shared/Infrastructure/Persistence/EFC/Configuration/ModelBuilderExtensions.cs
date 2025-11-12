@@ -19,6 +19,7 @@ public static class ModelBuilderExtensions
             var tableName = entity.GetTableName();
             if (!string.IsNullOrEmpty(tableName))
                 entity.SetTableName(tableName.ToPlural().ToSnakeCase());
+
             foreach (var property in entity.GetProperties())
                 property.SetColumnName(property.GetColumnName().ToSnakeCase());
             foreach (var key in entity.GetKeys())
@@ -30,16 +31,16 @@ public static class ModelBuilderExtensions
 
             foreach (var foreignKey in entity.GetForeignKeys())
             {
-                var foreignKeyName = foreignKey.GetConstraintName();
-                if (!string.IsNullOrEmpty(foreignKeyName))
-                    foreignKey.SetConstraintName(foreignKeyName.ToSnakeCase());
+                var fkName = foreignKey.GetConstraintName();
+                if (!string.IsNullOrEmpty(fkName))
+                    foreignKey.SetConstraintName(fkName.ToSnakeCase());
             }
 
             foreach (var index in entity.GetIndexes())
             {
-                var indexDatabaseName = index.GetDatabaseName();
-                if (!string.IsNullOrEmpty(indexDatabaseName))
-                    index.SetDatabaseName(indexDatabaseName.ToSnakeCase());
+                var idx = index.GetDatabaseName();
+                if (!string.IsNullOrEmpty(idx))
+                    index.SetDatabaseName(idx.ToSnakeCase());
             }
         }
     }

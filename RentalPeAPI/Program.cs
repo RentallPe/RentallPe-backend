@@ -29,6 +29,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();

@@ -37,5 +37,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         
         // Use snake case for database objects and pluralization for table names
         builder.UseSnakeCaseNamingConvention();
+        builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
     }
 }

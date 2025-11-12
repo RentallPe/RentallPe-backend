@@ -4,62 +4,64 @@ using RentalPeAPI.Property.Domain.Aggregates;
 using RentalPeAPI.Property.Domain.Aggregates.Entities;
 using RentalPeAPI.Property.Domain.Aggregates.ValueObjects;
 
-namespace RentalPeAPI.Property.Infrastructure.Persistence.EFCore.Configurations;
-
-public class SpaceConfiguration : IEntityTypeConfiguration<Space>
+namespace RentalPeAPI.Property.Infrastructure.Persistence.EFCore.Configurations
 {
-    public void Configure(EntityTypeBuilder<Space> builder)
+    public class SpaceConfiguration : IEntityTypeConfiguration<Space>
     {
-        builder.ToTable("Spaces");
-
-        builder.HasKey(s => s.Id);
-
-        builder.Property(s => s.Name)
-            .IsRequired()
-            .HasMaxLength(120);
-
-        builder.Property(s => s.Description)
-            .IsRequired()
-            .HasMaxLength(500);
-
-        builder.Property(s => s.PricePerHour)
-            .IsRequired()
-            .HasColumnType("decimal(10,2)");
-
-        builder.Property(s => s.Type)
-            .HasConversion<string>()
-            .IsRequired();
-
-        // Value Object: Location
-        builder.OwnsOne(s => s.Location, location =>
+        public void Configure(EntityTypeBuilder<Space> builder)
         {
-            location.Property(l => l.Address)
-                .HasColumnName("Address")
+            builder.ToTable("Spaces");
+
+            // 🔑 Clave primaria
+            builder.HasKey(s => s.Id);
+
+            // 🏷️ Propiedades básicas
+            builder.Property(s => s.Name)
                 .IsRequired()
-                .HasMaxLength(255);
-        });
+                .HasMaxLength(120);
 
-        // Value Object: OwnerId
-        builder.OwnsOne(s => s.OwnerId, owner =>
-        {
-            owner.Property(o => o.Value)
-                .HasColumnName("OwnerId")
+            builder.Property(s => s.Description)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            builder.Property(s => s.PricePerHour)
+                .IsRequired()
+                .HasColumnType("decimal(10,2)");
+
+            builder.Property(s => s.Type)
+                .HasConversion<string>()
                 .IsRequired();
-        });
-        
 
-        // Configuración de Services
-        builder.OwnsMany(s => s.Services, service =>
-        {
-            service.ToTable("SpaceServices");
-            service.WithOwner().HasForeignKey("SpaceId");
+            // 📍 Value Object: Location
+            builder.OwnsOne(s => s.Location, location =>
+            {
+                location.Property(l => l.Address)
+                    .HasColumnName("Address")
+                    .IsRequired()
+                    .HasMaxLength(255);
+            });
 
-            service.Property<int>("Id").ValueGeneratedOnAdd();
-            service.HasKey("Id");
+            // 👤 Value Object: OwnerId
+            builder.OwnsOne(s => s.OwnerId, owner =>
+            {
+                owner.Property(o => o.Value)
+                    .HasColumnName("OwnerId")
+                    .IsRequired();
+            });
+            
+            builder.OwnsOne(s => s.OwnerId, owner =>
+            {
+                owner.Property(o => o.Value)
+                    .HasColumnName("OwnerId_Value") // 👈 usa el nombre real de la columna
+                    .IsRequired();
+            });
 
-            service.Property(s => s.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-        });
+
+            // ⚙️ Relación uno a muchos con Services
+            builder.HasMany(s => s.Services)
+                .WithOne(s => s.Space)
+                .HasForeignKey(s => s.SpaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

@@ -6,9 +6,7 @@ public record Location
 
     public Location(string address)
     {
-        if (string.IsNullOrWhiteSpace(address))
-            throw new ArgumentException("Location cannot be empty.", nameof(address));
-        Address = address;
+        Address = string.IsNullOrWhiteSpace(address) ? "N/A" : address;
     }
 
     public override string ToString() => Address;

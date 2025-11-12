@@ -1,6 +1,7 @@
 using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -35,7 +36,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
       //// Profiles Context
       //builder.ApplyProfilesConfiguration();
         
-        // Use snake case for database objects and pluralization for table names
+        //Payment Context
+        builder.ApplyPaymentsConfiguration();
+        
         builder.UseSnakeCaseNamingConvention();
     }
 }

@@ -9,5 +9,5 @@ public interface ISpaceRepository
 
     Task<IEnumerable<Space>> ListAsync(int? ownerId = null, string? type = null);
     void Remove(Space space);
-    Task SaveChangesAsync();
+  
 }

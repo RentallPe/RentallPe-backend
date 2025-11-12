@@ -1,9 +1,8 @@
-using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+
 using RentalPeAPI.Shared.Domain.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
-namespace ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
-
+namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories;
 /// <summary>
 /// Implementation of the unit of work pattern using Entity Framework Core.
 /// </summary>

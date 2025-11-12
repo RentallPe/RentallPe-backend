@@ -1,19 +1,20 @@
-using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+// --- USINGS NECESARIOS ---
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using EFCore.NamingConventions; // <-- 1. ARREGLO: Faltaba este 'using' para SnakeCase
+// Usings para tu BC de Property (Space)
+using RentalPeAPI.Property.Domain.Aggregates; 
+using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; 
 
-namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
+// --- 2. ARREGLO: El namespace debe coincidir con la carpeta (EFC) ---
+namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
-/// <summary>
-/// Represents the application's database context using Entity Framework Core.
-/// </summary>
-/// <param name="options">The options for configuring the context.</param>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-    /// <summary>
-    /// Configures the database context options.
-    /// </summary>
-    /// <param name="builder">The options' builder.</param>
+    // --- 3. ARREGLO: Añade el DbSet para tu BC ---
+    public DbSet<Space> Spaces { get; set; } 
+    // (Aquí se añadirán AppUser, Payment, etc.)
+
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -21,23 +22,15 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         base.OnConfiguring(builder);
     }
 
-    /// <summary>
-    /// Configures the model for the database context.
-    /// </summary>
-    /// <param name="builder">The model builder.</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        // Publishing Context
-      //builder.ApplyPublishingConfiguration();
-
-      //// Profiles Context
-      //builder.ApplyProfilesConfiguration();
+        // --- 4. ARREGLO: Aplica la configuración de tu BC ---
+        builder.ApplyConfiguration(new SpaceConfiguration());
+        // (Aquí se añadirán UserConfiguration, etc.)
         
-        // Use snake case for database objects and pluralization for table names
-        builder.UseSnakeCaseNamingConvention();
-        builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-
+        // Configuración compartida
+        builder.UseSnakeCaseNamingConvention(); // <-- Esta línea ahora funcionará
     }
 }

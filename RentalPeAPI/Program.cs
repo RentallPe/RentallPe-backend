@@ -47,6 +47,7 @@ builder.Services.AddMediatR(cfg =>
 
 
 
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();

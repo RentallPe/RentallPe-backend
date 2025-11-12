@@ -1,6 +1,8 @@
 using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using RentalPeAPI.User.Domain;
+using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -15,6 +17,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     /// Configures the database context options.
     /// </summary>
     /// <param name="builder">The options' builder.</param>
+    public DbSet<AppUser> Users { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -39,6 +42,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         //Payment Context
         builder.ApplyPaymentsConfiguration();
         
+      
+      builder.ApplyConfiguration(new UserConfiguration());
+        // Use snake case for database objects and pluralization for table names
         builder.UseSnakeCaseNamingConvention();
     }
 }

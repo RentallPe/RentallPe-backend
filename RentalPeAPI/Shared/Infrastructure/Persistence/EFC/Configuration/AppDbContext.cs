@@ -1,23 +1,28 @@
-using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
-using RentalPeAPI.User.Domain;
-using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; // <-- NECESARIO
-namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
+using EFCore.NamingConventions; // NECESARIO para UseSnakeCaseNamingConvention
+
+// --- USINGS COMBINADOS (De ambos BCs) ---
+using RentalPeAPI.User.Domain; // Para AppUser (De izquierda)
+using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; // Para UserConfiguration (De izquierda)
+using RentalPeAPI.Property.Domain.Aggregates; // Para Space (De derecha)
+using RentalPeAPI.Property.Domain.Aggregates.Entities; // Para Service (De derecha)
+using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; // Para SpaceConfiguration (De derecha)
+using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions; // Para ApplyPaymentsConfiguration (De izquierda)
+
+namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
 /// <summary>
 /// Represents the application's database context using Entity Framework Core.
 /// </summary>
-/// <param name="options">The options for configuring the context.</param>
- 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-    /// <summary>
-    /// Configures the database context options.
-    /// </summary>
-    /// <param name="builder">The options' builder.</param>
-    public DbSet<AppUser> Users { get; set; }
+    // --- DBSETS COMBINADOS (USER, SPACE, SERVICE) ---
+    public DbSet<AppUser> Users { get; set; } // De izquierda
+    public DbSet<Space> Spaces { get; set; } // De derecha
+    public DbSet<Service> Services { get; set; } // De derecha (Asumo que Service es un DbSet)
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -25,24 +30,33 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         base.OnConfiguring(builder);
     }
 
-    /// <summary>
-    /// Configures the model for the database context.
-    /// </summary>
-    /// <param name="builder">The model builder.</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
+        // --- ESTRUCTURA BASE DE FRAMEWORK (Remote) ---
         // Publishing Context
       //builder.ApplyPublishingConfiguration();
-
-      //// Profiles Context
+      // Profiles Context
       //builder.ApplyProfilesConfiguration();
         
-        //Payment Context
-        builder.ApplyConfiguration(new UserConfiguration());
+        // --- APLICACIÓN DE CONFIGURACIONES (Combinación de todos los BCs) ---
+        
+        // 1. User BC (Reglas de User)
+        builder.ApplyConfiguration(new UserConfiguration()); 
+        
+        // 2. Payment BC (De izquierda)
         builder.ApplyPaymentsConfiguration();
         
-        builder.UseSnakeCaseNamingConvention();
+        // 3. Space BC (De derecha)
+        builder.ApplyConfiguration(new SpaceConfiguration());
+        builder.ApplyConfiguration(new ServiceConfiguration());
+        
+        // Configuración compartida
+        builder.UseSnakeCaseNamingConvention(); 
+
+       
+
+       
     }
 }

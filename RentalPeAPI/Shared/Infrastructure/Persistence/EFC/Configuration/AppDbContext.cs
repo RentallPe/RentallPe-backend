@@ -3,7 +3,7 @@ using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
 using RentalPeAPI.User.Domain;
-
+using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; // <-- NECESARIO
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 /// <summary>
@@ -40,7 +40,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
       //builder.ApplyProfilesConfiguration();
         
         //Payment Context
-        
+        builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyPaymentsConfiguration();
         
         builder.UseSnakeCaseNamingConvention();

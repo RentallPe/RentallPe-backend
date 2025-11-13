@@ -66,11 +66,11 @@ builder.Services.AddSingleton<ITokenGenerationService, TokenGenerationService>()
 
 // 3. Payment BC
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-builder.Services.AddScoped<IInvoiceRepository, IInvoiceRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IPaymentCommandService, PaymentCommandService>();
 builder.Services.AddScoped<IPaymentQueryService,   PaymentQueryService>();
 builder.Services.AddScoped<IInvoiceCommandService, InvoiceCommandService>();
-builder.Services.AddScoped<IInvoiceQueryService,   IInvoiceQueryService>();
+builder.Services.AddScoped<IInvoiceQueryService,   InvoiceQueryService>();
 
 // 4. Property/Space BC
 builder.Services.AddScoped<SpaceAppService>();

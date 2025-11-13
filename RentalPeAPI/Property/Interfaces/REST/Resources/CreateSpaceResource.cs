@@ -1,4 +1,6 @@
-﻿namespace RentalPeAPI.Property.Interfaces.Rest.Resources
+﻿using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+namespace RentalPeAPI.Property.Interfaces.Rest.Resources
 {
     public class CreateSpaceResource
     {
@@ -11,7 +13,12 @@
         public List<string> Services { get; set; } = new();
         
         // 👇 Nuevos campos alineados con tu entidad Space
+        [Required]
+        [JsonPropertyName("areaM2")] // <-- ¡LA SOLUCIÓN!
         public decimal AreaM2 { get; set; }
-        public string Status { get; set; } = "available";
+
+        [Required]
+        [JsonPropertyName("status")]
+        public string Status { get; set; }
     }
 }

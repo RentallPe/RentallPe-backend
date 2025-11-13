@@ -46,9 +46,10 @@ public class SpaceConfiguration : IEntityTypeConfiguration<Space>
 
         // 4. Relación con Services
         builder.HasMany(s => s.Services)
-            .WithOne()
-            .HasForeignKey("space_id")
+            .WithOne(sv => sv.Space)          // relación con la navegación
+            .HasForeignKey(sv => sv.SpaceId)  // 👈 usa la propiedad, no el string
             .HasConstraintName("fk_spaces_services_space_id")
             .OnDelete(DeleteBehavior.Cascade);
+
     }
 }

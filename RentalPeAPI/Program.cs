@@ -26,7 +26,12 @@ using RentalPeAPI.Property.Application.Services;
 using RentalPeAPI.Property.Domain.Repositories;
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Property.Infrastructure.Persistence; // Asumo que es necesaria para EFCore.Repositories
-
+using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
+using RentalPeAPI.Monitoring.Domain.Repositories;
+using RentalPeAPI.Monitoring.Domain.Repositories; // Para IWorkItemRepository
+using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories; 
+using RentalPeAPI.Monitoring.Infrastructure.Services;
+using RentalPeAPI.Monitoring.Domain.Services;
 // Mapeo de UnitOfWork (Para evitar conflictos de ACME)
 using IUnitOfWork = RentalPeAPI.Shared.Domain.Repositories.IUnitOfWork;
 using UnitOfWork = RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories.UnitOfWork;
@@ -76,7 +81,13 @@ builder.Services.AddScoped<IInvoiceQueryService,   InvoiceQueryService>();
 builder.Services.AddScoped<SpaceAppService>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 
-
+// --- Servicios de Monitoring BC ---
+builder.Services.AddScoped<IReadingRepository, ReadingRepository>();
+builder.Services.AddScoped<IWorkItemRepository, WorkItemRepository>();
+builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IAnomalyDetectorService, AnomalyDetectorService>();
+builder.Services.AddScoped<IIoTDeviceRepository, IoTDeviceRepository>();// <-- ¡Añade esto!
 var app = builder.Build();
 
 // --- EJECUCIÓN DE BASE DE DATOS (MANTIENE LA REGLA DEL EQUIPO) ---

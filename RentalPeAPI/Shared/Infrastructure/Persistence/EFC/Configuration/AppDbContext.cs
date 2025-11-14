@@ -9,6 +9,8 @@ using RentalPeAPI.Property.Domain.Aggregates; // Para Space (De derecha)
 using RentalPeAPI.Property.Domain.Aggregates.Entities; // Para Service (De derecha)
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; // Para SpaceConfiguration (De derecha)
 using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions; // Para ApplyPaymentsConfiguration (De izquierda)
+using RentalPeAPI.Monitoring.Domain.Entities;
+using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Configuration;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
@@ -21,8 +23,12 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<AppUser> Users { get; set; } // De izquierda
     public DbSet<Space> Spaces { get; set; } // De derecha
     public DbSet<Service> Services { get; set; } // De derecha (Asumo que Service es un DbSet)
-
-
+    public DbSet<IoTDevice> IoTDevices { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Incident> Incidents { get; set; } // <--- ¡Añade esto!
+    public DbSet<Reading> Readings { get; set; } // <--- ¡Añade esto!
+    public DbSet<WorkItem> Tasks { get; set; } // <--- ¡Añade esto!
+    
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -51,6 +57,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         // 3. Space BC (De derecha)
         builder.ApplyConfiguration(new SpaceConfiguration());
         builder.ApplyConfiguration(new ServiceConfiguration());
+       
+        builder.ApplyConfiguration(new ProjectConfiguration()); 
+        builder.ApplyConfiguration(new IoTDeviceConfiguration());
+   
+        builder.ApplyConfiguration(new IncidentConfiguration());
+        builder.ApplyConfiguration(new ReadingConfiguration());
+        builder.ApplyConfiguration(new WorkItemConfiguration());
+        builder.ApplyConfiguration(new IncidentConfiguration());
         
         // Configuración compartida
         builder.UseSnakeCaseNamingConvention(); 

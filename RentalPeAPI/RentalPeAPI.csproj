@@ -55,16 +55,7 @@
         <Folder Include="Payment\Interfaces\REST\Resources\" />
         <Folder Include="Payment\Interfaces\REST\Transform\" />
         <Folder Include="Profile\Application\ACL\" />
-        <Folder Include="Profile\Application\Internal\CommandServices\" />
-        <Folder Include="Profile\Application\Internal\QueryServices\" />
-        <Folder Include="Profile\Domain\Repositories\" />
-        <Folder Include="Profile\Domain\Services\" />
-        <Folder Include="Profile\Infrastructure\Interfaces\ASP\Configuration\Extensions\" />
-        <Folder Include="Profile\Infrastructure\Persistence\EFC\Configuration\Extensions\" />
-        <Folder Include="Profile\Infrastructure\Persistence\EFC\Repositories\" />
         <Folder Include="Profile\Interfaces\ACL\" />
-        <Folder Include="Profile\Interfaces\REST\Resources\" />
-        <Folder Include="Profile\Interfaces\REST\Transform\" />
         <Folder Include="Report\Application\ACL\" />
         <Folder Include="Report\Application\Internal\CommandServices\" />
         <Folder Include="Report\Application\Internal\QueryServices\" />

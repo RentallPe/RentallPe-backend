@@ -1,19 +1,19 @@
-﻿// Monitoring/Domain/Entities/Reading.cs
+﻿
 using System;
 
 namespace RentalPeAPI.Monitoring.Domain.Entities;
 
 public class Reading
 {
-    public long Id { get; set; } // Usamos long para grandes volúmenes de datos
+    public long Id { get; set; } 
     
-    // Clave Foránea a IoTDevice
+    
     public int IoTDeviceId { get; set; } 
     public int ProjectId { get; set; }
-    // Atributos de la Lectura
-    public string MetricName { get; set; } = string.Empty; // Ej: 'Temperature', 'Pressure'
+    
+    public string MetricName { get; set; } = string.Empty; 
     public decimal Value { get; set; }
-    public string Unit { get; set; } = string.Empty; // Ej: 'C', 'V', 'psi'
+    public string Unit { get; set; } = string.Empty; 
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
     public Reading() { }

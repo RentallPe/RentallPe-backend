@@ -1,6 +1,6 @@
-﻿// Monitoring/Application/Internal/QueryServices/ListIoTDevicesByProjectQuery.cs
+﻿
 using MediatR;
-using RentalPeAPI.Monitoring.Domain.Entities; // Asumo que el DTO de respuesta es la entidad
+using RentalPeAPI.Monitoring.Domain.Entities; 
 
 namespace RentalPeAPI.Monitoring.Application.Internal.QueryServices;
 

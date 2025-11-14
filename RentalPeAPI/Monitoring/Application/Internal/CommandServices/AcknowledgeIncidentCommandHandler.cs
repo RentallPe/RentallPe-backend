@@ -1,4 +1,4 @@
-﻿// Monitoring/Application/Internal/CommandServices/AcknowledgeIncidentCommandHandler.cs
+﻿
 using MediatR;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Shared.Domain.Repositories;
@@ -18,15 +18,15 @@ public class AcknowledgeIncidentCommandHandler : IRequestHandler<AcknowledgeInci
 
     public async Task<bool> Handle(AcknowledgeIncidentCommand command, CancellationToken cancellationToken)
     {
-        // 1. Obtener la entidad de la base de datos
+       
         var incident = await _incidentRepository.FindByIdAsync(command.IncidentId);
 
-        if (incident == null) return false; // El incidente no existe
+        if (incident == null) return false; 
 
-        // 2. Ejecutar la lógica de dominio (cambiar el estado)
+        
         incident.Acknowledge(command.AcknowledgedByUserId); 
 
-        // 3. Guardar cambios
+        
         await _unitOfWork.CompleteAsync();
         return true;
     }

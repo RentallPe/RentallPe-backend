@@ -87,7 +87,9 @@ builder.Services.AddScoped<IWorkItemRepository, WorkItemRepository>();
 builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IAnomalyDetectorService, AnomalyDetectorService>();
-builder.Services.AddScoped<IIoTDeviceRepository, IoTDeviceRepository>();// <-- ¡Añade esto!
+builder.Services.AddScoped<IIoTDeviceRepository, IoTDeviceRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 var app = builder.Build();
 
 // --- EJECUCIÓN DE BASE DE DATOS (MANTIENE LA REGLA DEL EQUIPO) ---
@@ -105,7 +107,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-// ... (El resto del Middleware de Localization, HttpsRedirection, y MapControllers)
+
 
 var cultures = new[] { "en", "en-US", "es", "es-PE" };
 var loc = new RequestLocalizationOptions()

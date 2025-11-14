@@ -1,4 +1,4 @@
-﻿// Monitoring/Application/Internal/QueryServices/ListIoTDevicesByProjectQueryHandler.cs
+﻿
 using MediatR;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Monitoring.Domain.Entities;
@@ -19,7 +19,7 @@ public class ListIoTDevicesByProjectQueryHandler
 
     public async Task<IEnumerable<IoTDevice>> Handle(ListIoTDevicesByProjectQuery query, CancellationToken cancellationToken)
     {
-        // El repositorio filtra la lista por el ID del proyecto
+        
         return await _deviceRepository.ListByProjectIdAsync(query.ProjectId);
     }
 }

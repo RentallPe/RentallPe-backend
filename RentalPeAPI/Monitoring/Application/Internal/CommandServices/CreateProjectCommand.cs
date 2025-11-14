@@ -1,4 +1,4 @@
-﻿// Monitoring/Application/Internal/CommandServices/CreateProjectCommand.cs
+﻿
 using MediatR;
 using System;
 
@@ -11,4 +11,4 @@ public record CreateProjectCommand(
     string Description,
     DateTime StartDate,
     DateTime EndDate
-) : IRequest<int>; // Devolverá el ID del proyecto
+) : IRequest<int>; 

@@ -28,7 +28,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Incident> Incidents { get; set; } // <--- ¡Añade esto!
     public DbSet<Reading> Readings { get; set; } // <--- ¡Añade esto!
     public DbSet<WorkItem> Tasks { get; set; } // <--- ¡Añade esto!
-    
+    public DbSet<Notification> Notifications { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -65,7 +65,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.ApplyConfiguration(new ReadingConfiguration());
         builder.ApplyConfiguration(new WorkItemConfiguration());
         builder.ApplyConfiguration(new IncidentConfiguration());
-        
+        builder.ApplyConfiguration(new NotificationConfiguration());
         // Configuración compartida
         builder.UseSnakeCaseNamingConvention(); 
 

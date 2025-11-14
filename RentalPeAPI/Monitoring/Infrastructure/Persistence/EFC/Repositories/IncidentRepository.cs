@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Repositories;
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; // AppDbContext
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
 namespace RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 

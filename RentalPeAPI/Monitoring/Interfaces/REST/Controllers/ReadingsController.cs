@@ -2,12 +2,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RentalPeAPI.Monitoring.Application.Internal.CommandServices;
-using RentalPeAPI.Monitoring.Interfaces.REST.Resources; // Asumiendo que tu DTO está aquí
-
+using RentalPeAPI.Monitoring.Interfaces.REST.Resources; 
+using RentalPeAPI.Monitoring.Application.Internal.QueryServices;
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
 [ApiController]
-[Route("api/v1/monitoring/[controller]")] // Ruta base: /api/v1/monitoring/readings
+[Route("api/v1/monitoring/[controller]")] 
 public class ReadingsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -23,8 +23,7 @@ public class ReadingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> IngestReading([FromBody] IngestReadingResource resource)
     {
-        // Nota: Asume que este DTO (IngestReadingResource) ya existe
-        // y tiene las propiedades necesarias (IoTDeviceId, Value, etc.)
+        
 
         var command = new IngestReadingCommand(
             resource.IoTDeviceId,
@@ -37,7 +36,7 @@ public class ReadingsController : ControllerBase
         
         await _mediator.Send(command);
         
-        // Devolver 202 Accepted (La recepción es exitosa, el procesamiento es asíncrono)
+        
         return Accepted();
     }
 }

@@ -28,7 +28,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(p => p.EndDate).HasColumnName("end_date");
         
         // Índices
-        builder.HasIndex(p => p.PropertyId).IsUnique(); // Un espacio solo puede tener 1 proyecto activo a la vez
+        builder.HasIndex(p => p.PropertyId).IsUnique(); 
         builder.HasIndex(p => p.UserId); 
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Monitoring.Domain.Entities;
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; // AppDbContext
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 using System.Threading.Tasks;
 
 namespace RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
@@ -18,7 +18,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task AddAsync(Project project)
     {
-        // Asume que el DbSet se llama Projects en AppDbContext
+        
         await _context.Projects.AddAsync(project); 
     }
 

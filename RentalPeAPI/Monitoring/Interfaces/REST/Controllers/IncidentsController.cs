@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
 [ApiController]
-[Route("api/v1/monitoring/[controller]")] // Ruta base: /api/v1/monitoring/incidents
+[Route("api/v1/monitoring/[controller]")]
 public class IncidentsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -46,5 +46,5 @@ public class IncidentsController : ControllerBase
         return NoContent(); // 204 No Content
     }
     
-    // (Asegúrate de crear el DTO AcknowledgeIncidentResource.cs en Resources/)
+    
 }

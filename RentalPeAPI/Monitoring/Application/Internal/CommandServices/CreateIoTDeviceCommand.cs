@@ -1,4 +1,4 @@
-﻿// Monitoring/Application/Internal/CommandServices/CreateIoTDeviceCommand.cs
+﻿
 using MediatR;
 using RentalPeAPI.Monitoring.Domain.Entities;
 
@@ -10,4 +10,3 @@ public record CreateIoTDeviceCommand(
     string SerialNumber,
     string Type
 ) : IRequest<IoTDevice>; 
-// IRequest<IoTDevice> indica que el handler devolverá el objeto creado.

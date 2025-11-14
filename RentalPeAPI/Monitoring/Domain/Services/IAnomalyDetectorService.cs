@@ -6,6 +6,6 @@ namespace RentalPeAPI.Monitoring.Domain.Services;
 
 public interface IAnomalyDetectorService
 {
-    // Método que verifica si la lectura causa un incidente
+    
     Task CheckAndCreateIncidentAsync(Reading reading);
 }

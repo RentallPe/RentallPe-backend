@@ -7,7 +7,7 @@ using RentalPeAPI.Monitoring.Interfaces.REST.Resources;
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
 [ApiController]
-[Route("api/v1/monitoring/[controller]")] // Ruta base: /api/v1/monitoring/tasks
+[Route("api/v1/monitoring/[controller]")] 
 public class TasksController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -23,7 +23,7 @@ public class TasksController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTask([FromBody] CreateWorkItemResource resource)
     {
-        // Mapeo implícito del recurso al comando (asumiendo que los nombres son iguales)
+        
         var command = new CreateWorkItemCommand(
             resource.ProjectId,
             resource.IncidentId,
@@ -33,11 +33,11 @@ public class TasksController : ControllerBase
         
         var taskId = await _mediator.Send(command);
         
-        // Devolver 201 Created
+       
         return CreatedAtAction(nameof(GetTaskById), new { id = taskId }, new { TaskId = taskId });
     }
     
-    // Asumo que tienes un método GET para Task.
+    
     [HttpGet("{id}")]
     public IActionResult GetTaskById(int id)
     {

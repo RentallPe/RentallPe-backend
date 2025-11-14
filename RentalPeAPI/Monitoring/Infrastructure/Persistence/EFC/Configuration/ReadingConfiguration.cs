@@ -9,7 +9,7 @@ public class ReadingConfiguration : IEntityTypeConfiguration<Reading>
 {
     public void Configure(EntityTypeBuilder<Reading> builder)
     {
-        builder.ToTable("readings"); // Nombre de la tabla
+        builder.ToTable("readings"); 
 
         // PK (Usamos long para grandes volúmenes de datos)
         builder.HasKey(r => r.Id);

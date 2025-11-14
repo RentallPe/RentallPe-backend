@@ -1,4 +1,4 @@
-﻿// Monitoring/Application/Internal/CommandServices/CreateTaskCommandHandler.cs
+﻿
 using MediatR;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Shared.Domain.Repositories; 
@@ -20,7 +20,7 @@ public class CreateWorkItemCommandHandler : IRequestHandler<CreateWorkItemComman
 
     public async Task<int> Handle(CreateWorkItemCommand command, CancellationToken cancellationToken)
     {
-        // 1. Crear la entidad de dominio
+     
         var task = new WorkItem(
             command.ProjectId,
             command.IncidentId,
@@ -28,11 +28,11 @@ public class CreateWorkItemCommandHandler : IRequestHandler<CreateWorkItemComman
             command.Description
         );
 
-        // 2. Persistir
+      
         await _workItemRepository.AddAsync(task);
         await _unitOfWork.CompleteAsync(); 
         
-        // 3. Devolver el ID de la nueva tarea
+        
         return task.Id; 
     }
 }

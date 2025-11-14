@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Repositories;
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; // AppDbContext
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

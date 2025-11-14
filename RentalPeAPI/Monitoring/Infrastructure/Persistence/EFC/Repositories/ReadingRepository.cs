@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
-using System.Threading.Tasks; // <-- ¡AÑADE ESTE USING!
+using System.Threading.Tasks; 
 
-// AppDbContext
+
 
 namespace RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 
@@ -18,7 +18,7 @@ public class ReadingRepository : IReadingRepository
         _context = context;
     }
 
-    // --- ¡ARREGLO! Debe devolver Task (el de C#), no la Entidad ---
+    
     public async Task AddAsync(Reading reading) 
     {
         await _context.Readings.AddAsync(reading);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
 [ApiController]
-[Route("api/v1/monitoring/[controller]")] // Ruta: /api/v1/monitoring/projects
+[Route("api/v1/monitoring/[controller]")] 
 public class ProjectsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -24,7 +24,7 @@ public class ProjectsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProject([FromBody] CreateProjectResource resource)
     {
-        // 1. Convertir Resource a Command (Mapeo explícito o Ensamblador)
+        
         var command = new CreateProjectCommand(
             resource.PropertyId,
             resource.UserId,
@@ -34,10 +34,10 @@ public class ProjectsController : ControllerBase
             resource.EndDate
         );
         
-        // 2. Enviar y obtener el ID
+        
         var projectId = await _mediator.Send(command);
         
-        // 3. Devolver 201 Created
+        
         return CreatedAtAction(nameof(GetProjectById), new { id = projectId }, new { id = projectId }); 
     }
 
@@ -47,7 +47,7 @@ public class ProjectsController : ControllerBase
     [HttpGet("{id:int}")]
     public IActionResult GetProjectById(int id)
     {
-        // Placeholder, pero ahora funcional
+        
         return Ok($"Proyecto {id} creado y listo para usar.");
     }
 }

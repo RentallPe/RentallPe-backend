@@ -12,21 +12,22 @@ public class AnomalyDetectorService : IAnomalyDetectorService
 {
     private readonly IIncidentRepository _incidentRepository;
     private readonly IUnitOfWork _unitOfWork;
-
-    public AnomalyDetectorService(IIncidentRepository incidentRepository, IUnitOfWork unitOfWork)
+    private readonly INotificationService _notificationService;
+    public AnomalyDetectorService(IIncidentRepository incidentRepository, IUnitOfWork unitOfWork , INotificationService notificationService)
     {
         _incidentRepository = incidentRepository;
         _unitOfWork = unitOfWork;
+        _notificationService = notificationService;
     }
 
     public async Task CheckAndCreateIncidentAsync(Reading reading)
     {
-        // --- LÓGICA DE NEGOCIO Y REGLA DE UMBRAL ---
+       
         const decimal MAX_TEMP_THRESHOLD = 35.0m;
         
         if (reading.MetricName.Equals("Temperature", StringComparison.OrdinalIgnoreCase) && reading.Value > MAX_TEMP_THRESHOLD)
         {
-            // 1. Crear el incidente usando el ProjectId y DeviceId de la lectura
+         
             var incident = new Incident(
                 reading.ProjectId, 
                 reading.IoTDeviceId,
@@ -34,11 +35,13 @@ public class AnomalyDetectorService : IAnomalyDetectorService
                 "CRITICAL"
             );
             
-            // 2. Persistir el incidente
+          
             await _incidentRepository.AddAsync(incident);
             await _unitOfWork.CompleteAsync();
+            await _notificationService.CreateNotificationForIncidentAsync(
+                incident, 
+                "gerencia@rentallpe.com");
             
-            // (Aquí se llamaría al servicio de Notification después)
         }
     }
 }

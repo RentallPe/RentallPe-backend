@@ -1,4 +1,4 @@
-﻿// Monitoring/Application/Internal/CommandServices/IngestReadingCommandHandler.cs
+﻿
 using MediatR;
 using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Repositories;
@@ -22,7 +22,7 @@ public class IngestReadingCommandHandler : IRequestHandler<IngestReadingCommand>
 
     public async Task Handle(IngestReadingCommand command, CancellationToken cancellationToken)
     {
-        // 1. Mapear el comando a la entidad de dominio
+    
         var reading = new Reading(
             command.IoTDeviceId,
             command.ProjectId,
@@ -32,12 +32,12 @@ public class IngestReadingCommandHandler : IRequestHandler<IngestReadingCommand>
             command.Timestamp
         );
 
-        // 2. Añadir al repositorio
+        
         await _readingRepository.AddAsync(reading);
 
-        // 3. Guardar cambios en la BD
+        
         await _unitOfWork.CompleteAsync(); 
         await _anomalyDetectorService.CheckAndCreateIncidentAsync(reading);
-        // (Aquí iría la lógica de 'Detect Anomaly' después de guardar)
+       
     }
 }

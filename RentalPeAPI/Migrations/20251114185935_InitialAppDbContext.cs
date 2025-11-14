@@ -7,12 +7,35 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RentalPeAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class FinalSpaceMigration : Migration
+    public partial class InitialAppDbContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "combos",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    provider_id = table.Column<int>(type: "int", nullable: false),
+                    name = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    description = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    install_days = table.Column<int>(type: "int", nullable: false),
+                    image = table.Column<string>(type: "varchar(400)", maxLength: 400, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    created_at = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("p_k_combos", x => x.id);
+                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -47,7 +70,7 @@ namespace RentalPeAPI.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    space_id = table.Column<long>(type: "bigint", nullable: true)
+                    space_id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -109,6 +132,9 @@ namespace RentalPeAPI.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "combos");
+
             migrationBuilder.DropTable(
                 name: "services");
 

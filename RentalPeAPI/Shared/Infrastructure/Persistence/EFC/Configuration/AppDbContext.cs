@@ -7,14 +7,21 @@ using RentalPeAPI.Property.Domain.Aggregates;
 using RentalPeAPI.Property.Domain.Aggregates.Entities;
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; 
 
+using RentalPeAPI.Combo.Domain.Aggregates.Entities;
+using RentalPeAPI.Combo.Infrastructure.Persistence.EFC.Configuration;
+
 // --- 2. ARREGLO: El namespace debe coincidir con la carpeta (EFC) ---
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
+
+
 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     // --- 3. ARREGLO: Añade el DbSet para tu BC ---
     public DbSet<Space> Spaces { get; set; } 
     public DbSet<Service> Services { get; set; } 
+    public DbSet<Combo.Domain.Aggregates.Entities.Combo> Combos { get; set; } = default!;
+    
     // (Aquí se añadirán AppUser, Payment, etc.)
 
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -28,14 +35,17 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
         base.OnModelCreating(builder);
 
-        // --- 4. ARREGLO: Aplica la configuración de tu BC ---
+        // Configuraciones de Property
         builder.ApplyConfiguration(new SpaceConfiguration());
         builder.ApplyConfiguration(new ServiceConfiguration());
 
+        // Configuración de Combo
+        builder.ApplyConfiguration(new ComboConfiguration());
 
         // (Aquí se añadirán UserConfiguration, etc.)
-        
+
         // Configuración compartida
-        builder.UseSnakeCaseNamingConvention(); // <-- Esta línea ahora funcionará
+        builder.UseSnakeCaseNamingConvention();
     }
+
 }

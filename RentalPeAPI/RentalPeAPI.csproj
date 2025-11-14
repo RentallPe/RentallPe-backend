@@ -38,6 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Combo\Domain\Aggregates\Enums\" />
       <Folder Include="Monitoring\Application\ACL\" />
       <Folder Include="Monitoring\Application\Internal\CommandServices\" />
       <Folder Include="Monitoring\Application\Internal\QueryServices\" />

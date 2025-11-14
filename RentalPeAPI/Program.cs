@@ -4,6 +4,13 @@ using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; // <-- Pa
 using RentalPeAPI.Shared.Domain.Repositories; // <-- Para IUnitOfWork
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories; // <-- Para UnitOfWork
 
+// Usings del BC de Combo
+using RentalPeAPI.Combo.Application.Internal.CommandServices;
+using RentalPeAPI.Combo.Application.Internal.QueryServices;
+using RentalPeAPI.Combo.Domain.Repositories;
+using RentalPeAPI.Combo.Infrastructure.Persistence.EFC.Repositories;
+
+
 // Usings del BC de Property (que ya tenías)
 using RentalPeAPI.Property.Application.Services;
 using RentalPeAPI.Property.Domain.Repositories;
@@ -20,6 +27,13 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<SpaceAppService>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 
+
+// 🔹 Servicios de aplicación y repositorios de Combo
+builder.Services.AddScoped<ComboCommandService>();
+builder.Services.AddScoped<ComboQueryService>();
+builder.Services.AddScoped<IComboRepository, ComboRepository>();
+
+
 // 🔹 Registra el UnitOfWork compartido (¡necesario para tu SpaceAppService!)
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -27,6 +41,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
     throw new Exception("Database connection string not found.");
+
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

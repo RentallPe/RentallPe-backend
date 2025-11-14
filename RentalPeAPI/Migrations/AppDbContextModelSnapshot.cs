@@ -22,6 +22,57 @@ namespace RentalPeAPI.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("RentalPeAPI.Combo.Domain.Aggregates.Entities.Combo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("varchar(400)")
+                        .HasColumnName("image");
+
+                    b.Property<int>("InstallDays")
+                        .HasColumnType("int")
+                        .HasColumnName("install_days");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("name");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("price");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("int")
+                        .HasColumnName("provider_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_combos");
+
+                    b.ToTable("combos", (string)null);
+                });
+
             modelBuilder.Entity("RentalPeAPI.Property.Domain.Aggregates.Entities.Service", b =>
                 {
                     b.Property<int>("Id")
@@ -36,17 +87,17 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("name");
 
-                    b.Property<long?>("space_id")
+                    b.Property<long>("SpaceId")
                         .HasColumnType("bigint")
                         .HasColumnName("space_id");
 
                     b.HasKey("Id")
                         .HasName("p_k_services");
 
-                    b.HasIndex("space_id")
+                    b.HasIndex("SpaceId")
                         .HasDatabaseName("i_x_services_space_id");
 
-                    b.ToTable("services");
+                    b.ToTable("services", (string)null);
                 });
 
             modelBuilder.Entity("RentalPeAPI.Property.Domain.Aggregates.Space", b =>
@@ -100,11 +151,14 @@ namespace RentalPeAPI.Migrations
 
             modelBuilder.Entity("RentalPeAPI.Property.Domain.Aggregates.Entities.Service", b =>
                 {
-                    b.HasOne("RentalPeAPI.Property.Domain.Aggregates.Space", null)
+                    b.HasOne("RentalPeAPI.Property.Domain.Aggregates.Space", "Space")
                         .WithMany("Services")
-                        .HasForeignKey("space_id")
+                        .HasForeignKey("SpaceId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_spaces_services_space_id");
+
+                    b.Navigation("Space");
                 });
 
             modelBuilder.Entity("RentalPeAPI.Property.Domain.Aggregates.Space", b =>

@@ -28,7 +28,9 @@ public class SpaceAppService
             command.Type,
             command.Location,
             command.OwnerId,
-            command.Services
+            command.Services,
+            command.AreaM2,
+            command.Status
         );
 
         await _spaceRepository.AddAsync(space);

@@ -62,6 +62,16 @@ namespace RentalPeAPI.Combo.Interfaces.REST.Controllers
             if (dto == null) return NotFound();
             return NoContent();
         }
+        
+        [HttpGet("provider/{providerId}")]
+        public async Task<IActionResult> GetByProvider(Guid providerId)
+        {
+            var dtos = await _queryService.ListByProviderAsync(providerId);
+            var resources = dtos.Select(ComboResourceAssembler.ToResource);
+            return Ok(resources);
+        }
+
+
 
         // DELETE: api/v1/combo/{id}
         [HttpDelete("{id}")]

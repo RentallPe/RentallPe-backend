@@ -8,4 +8,6 @@ public interface IComboRepository
     Task<Aggregates.Entities.Combo?> FindByIdAsync(int id);
     Task<IEnumerable<Aggregates.Entities.Combo>> ListAsync(Guid? providerId = null); // EDT 2025-11-15 Braulio
     void Remove(Aggregates.Entities.Combo combo);
+    Task<IEnumerable<Aggregates.Entities.Combo>> ListByProviderAsync(Guid providerId);
+
 }

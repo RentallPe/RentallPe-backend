@@ -53,4 +53,11 @@ public class ComboRepository : IComboRepository
     {
         await _context.SaveChangesAsync();
     }
+    public async Task<IEnumerable<Domain.Aggregates.Entities.Combo>> ListByProviderAsync(Guid providerId)
+    {
+        return await _context.Combos
+            .Where(c => c.ProviderId == providerId)
+            .ToListAsync();
+    }
+
 }

@@ -1,0 +1,433 @@
+@startuml
+
+' --- Configuración Visual ---
+' Un color de fondo similar al de la imagen
+skinparam backgroundColor #FFF9E6
+skinparam shadowing false
+
+' Estilo para las clases
+skinparam class {
+  BorderColor #555
+  ArrowColor #555
+}
+
+' Usamos 'package' para agrupar y simular las etiquetas
+' "Aggregate" y "Value Objects"
+skinparam package {
+  Style none ' Elimina la caja alrededor del paquete
+  FontColor #333
+  FontSize 14
+}
+
+' --- Definición de Clases ---
+
+' El Agregado (Aggregate)
+package "Aggregate" {
+  class Profile {
+    id: number
+    userId: UserId
+    fullName: string
+    bio?: string
+    avatar: Avatar
+    primaryEmail: string
+    primaryPhone?: Phone
+    primaryAddress?: Address
+    createdAt: Date
+    updatedAt: Date
+  }
+}
+
+' La otra entidad principal
+class PreferenceSet {
+  id: number
+  userId: UserId
+  language: LanguageCode
+  theme: ThemeMode
+  timeZone: string
+  notifications: NotificationPrefs
+  privacy: PrivacySettings
+  favorites: Set<RemoteListingId>
+  blockedUsers: Set<UserId>
+  quietHours?: QuietHours
+  updatedAt: Date
+}
+
+' Los Objetos de Valor (Value Objects)
+package "Value Objects" {
+  class UserId {
+    userId: long
+  }
+
+  class Address {
+    id: int
+    line1: string
+    line2?: string
+    district?: string
+    city: string
+    state?: string
+    postalCode?: string
+    country: string
+  }
+
+  class NotificationPrefs {
+    email: boolean
+    sms: boolean
+    push: boolean
+    inApp: boolean
+    --
+    channelsEnabled(): Set<NotificationChannel>
+  }
+}
+
+' --- Relaciones ---
+
+' Asociación: Profile se conecta con PreferenceSet
+Profile --> PreferenceSet
+
+' Agregación (o--): Profile "tiene un" UserId y Address
+Profile o-- UserId
+Profile o-- Address
+
+' Agregación (o--): PreferenceSet "tiene un" UserId y NotificationPrefs
+PreferenceSet o-- UserId
+PreferenceSet o-- NotificationPrefs
+
+@enduml
+@startuml
+
+' --- Configuración Visual ---
+skinparam backgroundColor #FDE2E4
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor #777
+}
+
+' Etiqueta para el contexto delimitado (Bounded Context)
+package "Reports & Advanced Features BC" {
+
+    ' --- Aggregate ---
+    class Report <<Aggregate>> {
+        id: number
+        remodelingId: number
+        userId: number
+        rating: RatingStars
+        createdAt: Date
+        updatedAt?: Date
+        status: ReportStatus
+        __
+        publishReport(): void
+        editReport(): void
+        deleteReport(): void
+    }
+
+    ' --- Value Objects ---
+    class RemodelingId <<Value Object>> {
+        remodelingId: Long
+    }
+
+    class UserId <<Value Object>> {
+        userId: Long
+    }
+
+    class RatingStars <<Value Object>> {
+        value: number
+        isValid(): boolean
+    }
+
+    ' --- Enum ---
+    enum ReportStatus {
+        DRAFT
+        PUBLISHED
+        EDITED
+        DELETED
+    }
+
+    ' --- Relaciones ---
+    
+    ' Report se conecta con RemodelingId
+    Report -up-> RemodelingId
+    
+    ' Report se conecta con UserId
+    Report -up-> UserId
+
+    ' Report usa el enum ReportStatus
+    Report <-right- ReportStatus
+
+    ' Report usa el value object RatingStars
+    Report -down-> RatingStars
+
+}
+
+@enduml
+@startuml
+
+' --- Configuración Visual ---
+skinparam backgroundColor #73B1F4
+skinparam shadowing false
+skinparam linetype ortho ' Hace que las líneas sean rectas con ángulos de 90 grados
+
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor #444
+}
+
+' Etiqueta del contexto
+package "Space Management BC" {
+
+    ' --- Aggregate ---
+    class Space <<Aggregate>> {
+        id: int
+        name: String
+        owner: UserId
+        type: SpaceType
+        capacity: int
+        price: double
+        description: String
+        includedServices: List<Services>
+        availability: boolean
+        address: Location
+        images: List<Images>
+        __
+        seeAvailability(date, time): void
+        addExtraService(): void
+        calculateAverageRating(): void
+    }
+
+    ' --- Value Objects ---
+    class "image" as Img <<Value Object>> {
+        id: Int
+        url: string
+    }
+
+    class OwnerId <<Value Object>> {
+        ownerId: id
+    }
+
+    class Location <<Value Object>> {
+        address: String
+        district: String
+        city: String
+        country: String
+        coordinates: String
+        __
+        ShowMap(): void
+        calculateDistance(): void
+    }
+
+    ' --- Entity ---
+    class Service <<Entity>> {
+        id: Int
+        name: string
+        description: string
+        price: double
+    }
+
+    ' --- Enum ---
+    enum SpaceType <<Enums>> {
+        CommercialPremises
+        ResidentialPremises
+    }
+
+    ' --- Relaciones ---
+    
+    ' Hacia la izquierda
+    Space -left-> Img
+
+    ' Hacia abajo
+    Space -down-> Service
+
+    ' Hacia la derecha (Agrupados)
+    Space -up-> OwnerId
+    Space -right-> SpaceType
+    Space -down-> Location
+    
+    ' Nota: Las flechas en PlantUML se auto-organizan, 
+    ' pero he puesto las direcciones (up, down, left, right) 
+    ' para imitar la posición de tu imagen.
+
+}
+
+@enduml
+
+@startuml
+
+' --- Configuración Visual ---
+skinparam backgroundColor #CCF2CC
+skinparam shadowing false
+skinparam linetype ortho
+
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor #555
+}
+
+package "Identity & Access Management BC" {
+
+    ' --- Aggregates ---
+    class PremisesOwner <<Aggregate>> {
+        company: String
+        address: String
+        ruc: String
+        registerRemodeling: List
+        __
+        registerRemodeling(): void
+        updateRemodeling(): void
+        deleteRemodeling(): void
+        lookmonitoring(): void
+        generateReport(): void
+    }
+
+    class Homeowner <<Aggregate>> {
+        address: String
+        registerRemodeling: List
+        __
+        registerRemodeling(): void
+        updateRemodeling(): void
+        deleteRemodeling(): void
+        lookmonitoring(): void
+        generateReport(): void
+    }
+
+    ' --- Central Entity (User) ---
+    class User {
+        Id: Int
+        name: String
+        email: String
+        password: String
+        photo: String
+        age: int
+        location: varchar
+        registerDate: Date
+        __
+        register(): void
+        login(): void
+        logout(): void
+        updateProfile():void
+        deleteAccount(): void
+    }
+
+    ' --- Value Object ---
+    class Image <<Value Object>> {
+        Id: Int
+        url: String
+    }
+
+    ' --- Relaciones ---
+    
+    ' PremisesOwner y Homeowner apuntan hacia User (parece indicar herencia o asociación fuerte)
+    PremisesOwner -down-> User
+    Homeowner -down-> User
+
+    ' Image apunta hacia User
+    Image -right-> User
+
+}
+
+@enduml
+
+@startuml
+
+' --- Configuración Visual ---
+skinparam backgroundColor #FFFFA3
+skinparam shadowing false
+skinparam linetype ortho
+
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor #555
+}
+
+package "IoT Monitoring & Notifications BC" {
+
+    ' --- Aggregate ---
+    class Monitoring <<Aggregate>> {
+        id: Int
+        monitorDate: Date
+        startTime: Time
+        endTime: Time
+        status: String
+        user: User
+        __
+        cancelMonitoring(): void
+        confirmMonitoring(): void
+        modifyMonitoring(): void
+        calculateTotalCost(): void
+    }
+
+    ' --- Value Objects ---
+    class MonitoringHistory <<Value Object>> {
+        id: Int
+        oldStatus: String
+        newStatus: String
+        date: Date
+        __
+        cancel(): void
+        confirm(): void
+        completed(): void
+    }
+
+    class Availability <<Value Object>> {
+        id: Int
+        date: Date
+        startTime: Time
+        endTime: Time
+        status: String
+        __
+        verifyAvailability(): void
+        blockSchedule(): void
+    }
+
+    class FreelancerID <<Value Object>> {
+        id: Long
+    }
+
+    class SpaceId <<Value Object>> {
+        id: Long
+    }
+
+    ' --- Enums ---
+    ' Nota: En la imagen hay dos enums con el mismo nombre pero valores distintos.
+    ' He usado alias para diferenciarlos en el código.
+
+    enum "MonitoringHistoryStatus" as StatusLeft {
+        CANCELED
+        CONFIRMED
+        COMPLETED
+    }
+
+    enum "MonitoringHistoryStatus" as StatusBottom {
+        CANCELED
+        CONFIRMED
+    }
+
+    enum AvailabilityStatus {
+        AVAILABLE
+        UNAVAILABLE
+    }
+
+    ' --- Relaciones ---
+
+    ' Composición: El diamante relleno sale de Monitoring hacia MonitoringHistory
+    Monitoring *--left-> MonitoringHistory
+
+    ' Relaciones con Enums
+    StatusLeft -up-> MonitoringHistory
+    StatusBottom -up-> Monitoring
+    AvailabilityStatus -up-> Availability
+
+    ' Relación discontinua
+    Monitoring ..> Availability
+
+    ' Relaciones hacia la derecha
+    Monitoring -right-> FreelancerID
+    Monitoring -right-> SpaceId
+
+}
+
+@enduml
+

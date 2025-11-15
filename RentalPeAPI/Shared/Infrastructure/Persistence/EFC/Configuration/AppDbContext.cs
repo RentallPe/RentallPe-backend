@@ -1,5 +1,13 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using EFCore.NamingConventions; 
+using RentalPeAPI.User.Domain; 
+using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; 
+using RentalPeAPI.Property.Domain.Aggregates; 
+using RentalPeAPI.Property.Domain.Aggregates.Entities; 
+using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; 
+using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.Profile.Infrastructure.Persistence.EFC.configuration.extensions;
 using EFCore.NamingConventions; // NECESARIO para UseSnakeCaseNamingConvention
 
 using RentalPeAPI.Combo.Domain.Aggregates.Entities;
@@ -50,7 +58,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
         base.OnModelCreating(builder);
 
-        // Configuraciones de Property
         // --- ESTRUCTURA BASE DE FRAMEWORK (Remote) ---
         // Publishing Context
       //builder.ApplyPublishingConfiguration();
@@ -64,6 +71,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         
         // 2. Payment BC (De izquierda)
         builder.ApplyPaymentsConfiguration();
+        builder.ApplyProfilesConfiguration();
+        
         
         // 3. Space BC (De derecha)
         builder.ApplyConfiguration(new SpaceConfiguration());
@@ -89,5 +98,4 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
        
     }
-
 }

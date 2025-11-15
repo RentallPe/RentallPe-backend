@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 
-// --- USINGS COMBINADOS Y CORRECTOS ---
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;           
-using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;           
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC; // Para AppDbContext
+// Shared
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;           // AppDbContext
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories;           // UnitOfWork impl
+using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;           // KebabCase routes
+using IUnitOfWork = RentalPeAPI.Shared.Domain.Repositories.IUnitOfWork;
+using UnitOfWork = RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories.UnitOfWork;
 
 // Usings del BC de Combo
 using RentalPeAPI.Combo.Application.Internal.CommandServices;
@@ -33,6 +35,13 @@ using RentalPeAPI.User.Infrastructure.Security;
 using RentalPeAPI.Property.Application.Services;
 using RentalPeAPI.Property.Domain.Repositories;
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Repositories;
+
+// Profile BC
+using RentalPeAPI.Profile.Domain.Repositories;
+using RentalPeAPI.Profile.Domain.Services;
+using RentalPeAPI.Profile.Application.Internal.CommandServices;
+using RentalPeAPI.Profile.Application.Internal.QueryServices;
+using RentalPeAPI.Profile.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Property.Infrastructure.Persistence; // Asumo que es necesaria para EFCore.Repositories
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Monitoring.Domain.Repositories;
@@ -57,6 +66,12 @@ builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
 // --- CONFIGURACIÓN DE BASE DE DATOS (MANTENIENDO EL ESTÁNDAR) ---
 var cs = builder.Configuration.GetConnectionString("DefaultConnection")
          ?? throw new Exception("Database connection string not found.");
+
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseMySQL(cs)
+       .LogTo(Console.WriteLine, LogLevel.Information)
+       .EnableSensitiveDataLogging()
+       .EnableDetailedErrors());
 
 // --- INYECCIÓN DE DEPENDENCIAS (COMBINADA) ---
 
@@ -87,6 +102,13 @@ builder.Services.AddScoped<IInvoiceQueryService,   InvoiceQueryService>();
 builder.Services.AddScoped<SpaceAppService>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 
+// Profile BC
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IPreferenceSetRepository, PreferenceSetRepository>();
+builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
+builder.Services.AddScoped<IProfileQueryService,   ProfileQueryService>();
+builder.Services.AddScoped<IPreferenceSetCommandService, PreferenceSetCommandService>();
+builder.Services.AddScoped<IPreferenceSetQueryService,   PreferenceSetQueryService>();
 // --- Servicios de Monitoring BC ---
 builder.Services.AddScoped<IReadingRepository, ReadingRepository>();
 builder.Services.AddScoped<IWorkItemRepository, WorkItemRepository>();
@@ -142,8 +164,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+// ... (El resto del Middleware de Localization, HttpsRedirection, y MapControllers)
 
-
+// Localization
 var cultures = new[] { "en", "en-US", "es", "es-PE" };
 var loc = new RequestLocalizationOptions()
     .SetDefaultCulture(cultures[0])

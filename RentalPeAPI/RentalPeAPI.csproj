@@ -18,13 +18,12 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
-
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="1.1.6" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
         <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.9" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
@@ -48,7 +47,6 @@
         <Folder Include="Monitoring\Interfaces\ACL\" />
         <Folder Include="Monitoring\Interfaces\REST\Resources\" />
         <Folder Include="Monitoring\Interfaces\REST\Transform\" />
-
         <Folder Include="Payment\Application\ACL\" />
         <Folder Include="Payment\Application\Internal\CommandServices\" />
         <Folder Include="Payment\Application\Internal\QueryServices\" />
@@ -60,7 +58,6 @@
         <Folder Include="Payment\Interfaces\ACL\" />
         <Folder Include="Payment\Interfaces\REST\Resources\" />
         <Folder Include="Payment\Interfaces\REST\Transform\" />
-
         <Folder Include="Profile\Application\ACL\" />
         <Folder Include="Profile\Application\Internal\CommandServices\" />
         <Folder Include="Profile\Application\Internal\QueryServices\" />
@@ -72,7 +69,6 @@
         <Folder Include="Profile\Interfaces\ACL\" />
         <Folder Include="Profile\Interfaces\REST\Resources\" />
         <Folder Include="Profile\Interfaces\REST\Transform\" />
-
         <Folder Include="Report\Application\ACL\" />
         <Folder Include="Report\Application\Internal\CommandServices\" />
         <Folder Include="Report\Application\Internal\QueryServices\" />
@@ -84,7 +80,6 @@
         <Folder Include="Report\Interfaces\ACL\" />
         <Folder Include="Report\Interfaces\REST\Resources\" />
         <Folder Include="Report\Interfaces\REST\Transform\" />
-
         <Folder Include="User\Application\ACL\" />
         <Folder Include="User\Application\Internal\CommandServices\" />
         <Folder Include="User\Application\Internal\QueryServices\" />

@@ -2,7 +2,7 @@
 
 public class CreateComboResource
 {
-    public int ProviderId { get; set; }
+    public Guid ProviderId { get; set; } // EDT 2025-11-15 Braulio
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
     public decimal Price { get; set; }

@@ -24,7 +24,7 @@ namespace RentalPeAPI.Combo.Interfaces.REST.Controllers
 
         // GET: api/v1/combo
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ComboResource>>> GetAll([FromQuery] int? providerId)
+        public async Task<ActionResult<IEnumerable<ComboResource>>> GetAll([FromQuery] Guid? providerId)
         {
             var dtos = await _queryService.ListAsync(providerId);
             var resources = dtos.Select(ComboResourceAssembler.ToResource);

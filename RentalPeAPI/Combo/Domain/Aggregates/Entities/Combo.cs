@@ -4,7 +4,8 @@ using RentalPeAPI.Combo.Domain.Aggregates.ValueObjects;
 public class Combo
 {
     public int Id { get; set; }
-    public int ProviderId { get; private set; }
+    public Guid ProviderId { get; set; } // NUE 2025-11-15 Braulio
+
 
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
@@ -19,7 +20,7 @@ public class Combo
 
     protected Combo() { }
 
-    public Combo(string name, string description, decimal price, int installDays, string image, int providerId)
+    public Combo(string name, string description, decimal price, int installDays, string image, Guid providerId)
     {
         Name = name;
         Description = description;
@@ -31,7 +32,7 @@ public class Combo
         ProviderId = providerId;
     }
 
-    public void Update(string name, string description, decimal price, int installDays, string image, int providerId)
+    public void Update(string name, string description, decimal price, int installDays, string image, Guid providerId)
     {
         Name = name;
         Description = description;

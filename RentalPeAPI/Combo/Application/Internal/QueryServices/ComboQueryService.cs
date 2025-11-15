@@ -12,7 +12,7 @@ namespace RentalPeAPI.Combo.Application.Internal.QueryServices
             _repository = repository;
         }
 
-        public async Task<IEnumerable<ComboDto>> ListAsync(int? providerId)
+        public async Task<IEnumerable<ComboDto>> ListAsync(Guid? providerId = null)
         {
             var combos = await _repository.ListAsync(providerId);
             return combos.Select(ComboDto.FromDomain);

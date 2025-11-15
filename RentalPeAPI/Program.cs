@@ -90,6 +90,11 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<ITokenGenerationService,   TokenGenerationService>();
 
+// Combo
+builder.Services.AddScoped<IComboRepository, ComboRepository>();
+builder.Services.AddScoped<ComboCommandService>();
+builder.Services.AddScoped<ComboQueryService>();
+
 // Payment
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IInvoiceRepository,  InvoiceRepository>();

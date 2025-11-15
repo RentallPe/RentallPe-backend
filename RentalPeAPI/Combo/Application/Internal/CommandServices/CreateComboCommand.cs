@@ -7,15 +7,17 @@ public class CreateComboCommand
     public decimal Price { get; }
     public int InstallDays { get; }
     public string Image { get; }
-    public int ProviderId { get; }
+    public Guid ProviderId { get; } // EDT 2025-11-15 Braulio
 
-    public CreateComboCommand(string name, string description, decimal price, int installDays, string image, int providerId)
+
+    public CreateComboCommand(string name, string description, decimal price, int installDays, string image, Guid providerId) // EDT 2025-11-15 Braulio
     {
         Name = name;
         Description = description;
         Price = price;
         InstallDays = installDays;
         Image = image;
-        ProviderId = providerId;
+        ProviderId = providerId; // EDT 2025-11-15 Braulio
+
     }
 }

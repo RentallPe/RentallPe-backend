@@ -25,7 +25,7 @@ public class ComboRepository : IComboRepository
         return await _context.Combos.FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<IEnumerable<Domain.Aggregates.Entities.Combo>> ListAsync(int? providerId = null)
+    public async Task<IEnumerable<Domain.Aggregates.Entities.Combo>> ListAsync(Guid? providerId = null)
     {
         var query = _context.Combos.AsQueryable();
 
@@ -33,6 +33,7 @@ public class ComboRepository : IComboRepository
             query = query.Where(c => c.ProviderId == providerId.Value);
 
         return await query.ToListAsync();
+
     }
 
     public void Remove(Domain.Aggregates.Entities.Combo combo)

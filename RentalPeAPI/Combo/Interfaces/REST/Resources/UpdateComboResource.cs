@@ -7,6 +7,6 @@
         public decimal Price { get; set; }
         public int InstallDays { get; set; }
         public string Image { get; set; } = "";
-        public int ProviderId { get; set; }
+        public Guid ProviderId { get; set; } // EDT 2025-11-15 Braulio
     }
 }

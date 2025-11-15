@@ -4,7 +4,8 @@ using RentalPeAPI.Combo.Domain.Aggregates.Entities;
 public class ComboDto
 {
     public int Id { get; set; }
-    public int ProviderId { get; set; }
+    public Guid ProviderId { get; set; } // EDT 2025-11-15 Braulio
+
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 
@@ -17,7 +18,7 @@ public class ComboDto
         return new ComboDto
         {
             Id = combo.Id,
-            ProviderId = combo.ProviderId,
+            ProviderId = combo.ProviderId, // EDT 2025-11-15 Braulio
             Name = combo.Name,
             Description = combo.Description,
             Price = combo.Price,             // 👈 VO

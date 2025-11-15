@@ -50,8 +50,7 @@ using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Monitoring.Infrastructure.Services;
 using RentalPeAPI.Monitoring.Domain.Services;
 // Mapeo de UnitOfWork (Para evitar conflictos de ACME)
-using IUnitOfWork = RentalPeAPI.Shared.Domain.Repositories.IUnitOfWork;
-using UnitOfWork = RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories.UnitOfWork;
+
 
 
 var builder = WebApplication.CreateBuilder(args);

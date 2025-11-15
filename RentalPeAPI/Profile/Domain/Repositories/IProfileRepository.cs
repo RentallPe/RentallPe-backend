@@ -1,12 +1,9 @@
-﻿using RentalPeAPI.Profile.Domain.Model.Aggregates;
-using RentalPeAPI.Shared.Domain.Repositories;
+﻿using RentalPeAPI.Shared.Domain.Repositories;
 
 namespace RentalPeAPI.Profile.Domain.Repositories;
 
-/// <summary>
-/// Repositorio de perfiles.
-/// </summary>
-public interface IProfileRepository : IBaseRepository<Profile>
+public interface IProfileRepository : IBaseRepository<Model.Aggregates.Profile>
 {
-    Task<Profile?> FindByUserIdAsync(long userId);
+    Task<Model.Aggregates.Profile?> FindByUserIdAsync(long userId);
+    Task<Model.Aggregates.Profile?> FindByEmailAsync(string email);
 }

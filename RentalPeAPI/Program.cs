@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 
-// --- USINGS COMBINADOS Y CORRECTOS ---
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;           
-using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;           
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC; // Para AppDbContext
+// Shared
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;           // AppDbContext
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories;           // UnitOfWork impl
+using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;           // KebabCase routes
+using IUnitOfWork = RentalPeAPI.Shared.Domain.Repositories.IUnitOfWork;
+using UnitOfWork = RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories.UnitOfWork;
 
 // Payment BC
 using RentalPeAPI.Payment.Domain.Repositories;
@@ -21,50 +23,49 @@ using RentalPeAPI.User.Domain.Services;
 using RentalPeAPI.User.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.User.Infrastructure.Security;
 
-// Property/Space BC (Tu rama)
+// Property/Space BC
 using RentalPeAPI.Property.Application.Services;
 using RentalPeAPI.Property.Domain.Repositories;
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Repositories;
-using RentalPeAPI.Property.Infrastructure.Persistence; // Asumo que es necesaria para EFCore.Repositories
 
-// Mapeo de UnitOfWork (Para evitar conflictos de ACME)
-using IUnitOfWork = RentalPeAPI.Shared.Domain.Repositories.IUnitOfWork;
-using UnitOfWork = RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories.UnitOfWork;
-
+// Profile BC
+using RentalPeAPI.Profile.Domain.Repositories;
+using RentalPeAPI.Profile.Domain.Services;
+using RentalPeAPI.Profile.Application.Internal.CommandServices;
+using RentalPeAPI.Profile.Application.Internal.QueryServices;
+using RentalPeAPI.Profile.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Servicios Compartidos y UI ---
+// Localization + MVC
 builder.Services.AddLocalization();
 builder.Services.AddControllers(o => o.Conventions.Add(new KebabCaseRouteNamingConvention()))
     .AddDataAnnotationsLocalization();
+
+// Swagger
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
 
-// --- CONFIGURACIÓN DE BASE DE DATOS (MANTENIENDO EL ESTÁNDAR) ---
+// DbContext
 var cs = builder.Configuration.GetConnectionString("DefaultConnection")
          ?? throw new Exception("Database connection string not found.");
-         
+
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    // Usamos MySQL con el paquete de Pomelo o el compatible (que resuelve conflictos)
-    opt.UseMySQL(cs) 
+    opt.UseMySQL(cs)
        .LogTo(Console.WriteLine, LogLevel.Information)
        .EnableSensitiveDataLogging()
        .EnableDetailedErrors());
 
-// --- INYECCIÓN DE DEPENDENCIAS (COMBINADA) ---
+// Shared
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// 1. Shared (IUnitOfWork)
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();                          
-
-// 2. User BC
+// User BC
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<ITokenGenerationService, TokenGenerationService>();
-// builder.Services.AddScoped<RentalPeAPI.User.Domain.Repositories.IUnitOfWork, UnitOfWorkAdapter>(); // Mantengo el que ya estaba en la izquierda si es necesario
 
-// 3. Payment BC
+// Payment BC
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IPaymentCommandService, PaymentCommandService>();
@@ -72,30 +73,36 @@ builder.Services.AddScoped<IPaymentQueryService,   PaymentQueryService>();
 builder.Services.AddScoped<IInvoiceCommandService, InvoiceCommandService>();
 builder.Services.AddScoped<IInvoiceQueryService,   InvoiceQueryService>();
 
-// 4. Property/Space BC
+// Property/Space BC
 builder.Services.AddScoped<SpaceAppService>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 
+// Profile BC
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IPreferenceSetRepository, PreferenceSetRepository>();
+builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
+builder.Services.AddScoped<IProfileQueryService,   ProfileQueryService>();
+builder.Services.AddScoped<IPreferenceSetCommandService, PreferenceSetCommandService>();
+builder.Services.AddScoped<IPreferenceSetQueryService,   PreferenceSetQueryService>();
 
 var app = builder.Build();
 
-// --- EJECUCIÓN DE BASE DE DATOS (MANTIENE LA REGLA DEL EQUIPO) ---
+// Ensure DB
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // Mantenemos EnsureCreated() según la regla de la rama principal
-    db.Database.EnsureCreated();        
+    db.Database.EnsureCreated();
 }
 
-
+// Swagger UI
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-// ... (El resto del Middleware de Localization, HttpsRedirection, y MapControllers)
 
+// Localization
 var cultures = new[] { "en", "en-US", "es", "es-PE" };
 var loc = new RequestLocalizationOptions()
     .SetDefaultCulture(cultures[0])

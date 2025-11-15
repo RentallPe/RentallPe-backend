@@ -1,105 +1,151 @@
-﻿using RentalPeAPI.Profile.Domain.Model.Aggregates;
-using RentalPeAPI.Profile.Domain.Model.Commands;
+﻿using RentalPeAPI.Profile.Domain.Model.Commands;
 using RentalPeAPI.Profile.Domain.Repositories;
 using RentalPeAPI.Profile.Domain.Services;
 using RentalPeAPI.Shared.Domain.Repositories;
 
-// Alias para dejar claro que usamos el agregado de dominio
-using ProfileAggregate = RentalPeAPI.Profile.Domain.Model.Aggregates.Profile;
-
 namespace RentalPeAPI.Profile.Application.Internal.CommandServices;
 
-/// <summary>
-/// Implements the profile command service for the RentalPe platform.
-/// </summary>
-public class ProfileCommandService : IProfileCommandService
+public class ProfileCommandService(
+    IProfileRepository profileRepository,
+    IUnitOfWork unitOfWork) : IProfileCommandService
 {
-    private readonly IProfileRepository _profileRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public ProfileCommandService(
-        IProfileRepository profileRepository,
-        IUnitOfWork unitOfWork)
+    public async Task<Domain.Model.Aggregates.Profile?> Handle(CreateProfileCommand command)
     {
-        _profileRepository = profileRepository;
-        _unitOfWork = unitOfWork;
-    }
+        var byUser = await profileRepository.FindByUserIdAsync(command.UserId.Value);
+        if (byUser is not null) return null;
 
-    /// <summary>
-    /// Handles the create profile command.
-    /// </summary>
-    /// <param name="command">The <see cref="CreateProfileCommand"/> to handle.</param>
-    /// <returns>The created <see cref="ProfileAggregate"/> or null if it already exists.</returns>
-    public async Task<ProfileAggregate?> Handle(CreateProfileCommand command)
-    {
-        // Evitar duplicar perfiles por UserId
-        var existingProfile = await _profileRepository.FindByUserIdAsync(command.UserId);
-        if (existingProfile is not null) return null;
+        var byEmail = await profileRepository.FindByEmailAsync(command.PrimaryEmail);
+        if (byEmail is not null) return null;
 
-        var profile = new ProfileAggregate(
+        var profile = new Domain.Model.Aggregates.Profile(
             command.UserId,
             command.FullName,
-            command.Country,
-            command.Department,
             command.PrimaryEmail,
-            command.PrimaryPhone);
+            command.Avatar,
+            command.Bio,
+            command.PrimaryPhone,
+            command.PrimaryAddress);
 
-        await _profileRepository.AddAsync(profile);
-        await _unitOfWork.CompleteAsync();
-
-        return profile;
+        try
+        {
+            await profileRepository.AddAsync(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
-    /// <summary>
-    /// Handles the update profile command.
-    /// </summary>
-    /// <param name="command">The <see cref="UpdateProfileCommand"/> to handle.</param>
-    /// <returns>The updated <see cref="ProfileAggregate"/> or null if it was not found.</returns>
-    public async Task<ProfileAggregate?> Handle(UpdateProfileCommand command)
+    public async Task<Domain.Model.Aggregates.Profile?> Handle(UpdateProfileNameCommand command)
     {
-        var profile = await _profileRepository.FindByIdAsync(command.ProfileId);
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
         if (profile is null) return null;
 
-        profile.UpdateBasicInformation(
-            command.FullName,
-            command.Country,
-            command.Department,
-            command.PrimaryEmail,
-            command.PrimaryPhone);
-
-        _profileRepository.Update(profile);
-        await _unitOfWork.CompleteAsync();
-
-        return profile;
+        try
+        {
+            profile.UpdateName(command.FullName);
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
-    /// <summary>
-    /// Handles the add payment method to profile command.
-    /// </summary>
-    public async Task<ProfileAggregate?> Handle(AddPaymentMethodToProfileCommand command)
+    public async Task<Domain.Model.Aggregates.Profile?> Handle(UpdateProfileBioCommand command)
     {
-        var profile = await _profileRepository.FindByIdAsync(command.ProfileId);
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
         if (profile is null) return null;
 
-        profile.AddPaymentMethod(command.PaymentMethod);
-        _profileRepository.Update(profile);
-        await _unitOfWork.CompleteAsync();
-
-        return profile;
+        try
+        {
+            profile.UpdateBio(command.Bio);
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
-    /// <summary>
-    /// Handles the remove payment method from profile command.
-    /// </summary>
-    public async Task<ProfileAggregate?> Handle(RemovePaymentMethodFromProfileCommand command)
+    public async Task<Domain.Model.Aggregates.Profile?> Handle(UpdateProfileEmailCommand command)
     {
-        var profile = await _profileRepository.FindByIdAsync(command.ProfileId);
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
+        if (profile is null) return null;
+        
+        var byEmail = await profileRepository.FindByEmailAsync(command.Email);
+        if (byEmail is not null && byEmail.Id != profile.Id) return null;
+
+        try
+        {
+            profile.UpdateEmail(command.Email);
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public async Task<Domain.Model.Aggregates.Profile?> Handle(UpdateProfilePhoneCommand command)
+    {
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
         if (profile is null) return null;
 
-        profile.RemovePaymentMethod(command.PaymentMethodId);
-        _profileRepository.Update(profile);
-        await _unitOfWork.CompleteAsync();
+        try
+        {
+            profile.UpdatePhone(command.Phone);
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
-        return profile;
+    public async Task<Domain.Model.Aggregates.Profile?> Handle(UpdateProfileAddressCommand command)
+    {
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
+        if (profile is null) return null;
+
+        try
+        {
+            profile.UpdateAddress(command.Address);
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public async Task<Domain.Model.Aggregates.Profile?> Handle(UpdateProfileAvatarCommand command)
+    {
+        var profile = await profileRepository.FindByIdAsync(command.ProfileId);
+        if (profile is null) return null;
+
+        try
+        {
+            profile.UpdateAvatar(command.Avatar);
+            profileRepository.Update(profile);
+            await unitOfWork.CompleteAsync();
+            return profile;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

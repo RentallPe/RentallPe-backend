@@ -1,22 +1,28 @@
-﻿using ACME.LearningCenterPlatform.API.Profiles.Domain.Model.Commands;
-using ACME.LearningCenterPlatform.API.Profiles.Interfaces.REST.Resources;
+﻿using RentalPeAPI.Profile.Domain.Model.Commands;
+using RentalPeAPI.Profile.Domain.Model.ValueObjects;
+using RentalPeAPI.Profile.Interfaces.REST.Resources;
 
-namespace ACME.LearningCenterPlatform.API.Profiles.Interfaces.REST.Transform;
+namespace RentalPeAPI.Profile.Interfaces.REST.Transform;
 
-/// <summary>
-///     Converts CreateProfileResource into CreateProfileCommand.
-/// </summary>
 public static class CreateProfileCommandFromResourceAssembler
 {
-    public static CreateProfileCommand ToCommandFromResource(CreateProfileResource resource)
-    {
-        return new CreateProfileCommand(
-            resource.UserId,
-            resource.FullName,
-            resource.PrimaryEmail,
-            resource.Country,
-            resource.Department,
-            resource.Bio,
-            resource.AvatarUrl);
-    }
+    public static CreateProfileCommand ToCommandFromResource(CreateProfileResource r)
+        => new(
+            new UserId(r.UserId),
+            r.FullName,
+            r.PrimaryEmail,
+            new Avatar(r.Avatar.Url),
+            r.Bio,
+            r.PrimaryPhone is null ? null : new Phone(r.PrimaryPhone.Number),
+            r.PrimaryAddress is null
+                ? null
+                : new Address(
+                    r.PrimaryAddress.Line1,
+                    r.PrimaryAddress.City,
+                    r.PrimaryAddress.Country,
+                    r.PrimaryAddress.Line2,
+                    r.PrimaryAddress.District,
+                    r.PrimaryAddress.State,
+                    r.PrimaryAddress.PostalCode)
+        );
 }

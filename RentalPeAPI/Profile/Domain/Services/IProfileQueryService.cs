@@ -1,13 +1,10 @@
-﻿using System.Threading.Tasks;
-using RentalPeAPI.Profile.Domain.Model.Aggregates;
-using RentalPeAPI.Profile.Domain.Model.Queries;
+﻿using RentalPeAPI.Profile.Domain.Model.Queries;
 
-namespace RentalPeAPI.Profile.Domain.Services
+namespace RentalPeAPI.Profile.Domain.Services;
+
+public interface IProfileQueryService
 {
-    /// <summary>Servicio de consultas para Profile.</summary>
-    public interface IProfileQueryService
-    {
-        Task<UserProfile?> Handle(GetProfileByIdQuery query);
-        Task<UserProfile?> Handle(GetProfileByUserIdQuery query);
-    }
+    Task<Model.Aggregates.Profile?> Handle(GetProfileByIdQuery query);
+    Task<Model.Aggregates.Profile?> Handle(GetProfileByUserIdQuery query);
+    Task<Model.Aggregates.Profile?> Handle(GetProfileByEmailQuery query);
 }

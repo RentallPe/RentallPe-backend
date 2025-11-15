@@ -14,10 +14,8 @@ namespace RentalPeAPI.Profile.Infrastructure.Interfaces.ASP.Configuration.Extens
         /// <param name="builder">Instancia de WebApplicationBuilder.</param>
         public static void AddProfilesContextServices(this WebApplicationBuilder builder)
         {
-            // Repositorios
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
-
-            // Domain Services
+            
             builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
             builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
         }

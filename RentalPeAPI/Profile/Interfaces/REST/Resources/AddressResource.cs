@@ -1,20 +1,13 @@
-﻿namespace RentalPeAPI.Profile.Interfaces.REST.Resources;
+﻿using System.ComponentModel.DataAnnotations;
 
-/// <summary>
-///     Address resource usado dentro de las respuestas de Profile.
-/// </summary>
-/// <param name="Line1">Línea principal de dirección.</param>
-/// <param name="Line2">Segunda línea opcional.</param>
-/// <param name="District">Distrito o barrio.</param>
-/// <param name="City">Nombre de la ciudad.</param>
-/// <param name="State">Estado o región.</param>
-/// <param name="PostalCode">Código postal / ZIP.</param>
-/// <param name="Country">Nombre del país.</param>
+namespace RentalPeAPI.Profile.Interfaces.REST.Resources;
+
 public record AddressResource(
-    string Line1,
-    string? Line2,
-    string? District,
-    string City,
-    string? State,
-    string? PostalCode,
-    string Country);
+    [Required, MaxLength(200)] string Line1,
+    [MaxLength(200)] string? Line2,
+    [MaxLength(100)] string? District,
+    [Required, MaxLength(100)] string City,
+    [MaxLength(100)] string? State,
+    [MaxLength(32)] string? PostalCode,
+    [Required, MaxLength(100)] string Country
+);

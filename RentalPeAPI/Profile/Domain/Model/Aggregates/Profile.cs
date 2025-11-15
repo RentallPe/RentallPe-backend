@@ -1,71 +1,61 @@
-﻿using RentalPeAPI.Profile.Domain.Model.Entities;
-using RentalPeAPI.Profile.Domain.Model.ValueObjects;
+﻿using RentalPeAPI.Profile.Domain.Model.ValueObjects;
 
 namespace RentalPeAPI.Profile.Domain.Model.Aggregates;
 
-/// <summary>
-/// Aggregate raíz para el perfil de usuario en RentalPe.
-/// </summary>
-public class Profile
+public partial class Profile
 {
-    public int Id { get; private set; }
+    public int Id { get; }
+    public UserId UserId { get; private set; }
 
-    /// <summary>Id del usuario dueño del perfil (User BC / IAM).</summary>
-    public long UserId { get; private set; }
+    public string FullName { get; private set; }
+    public string? Bio { get; private set; }
 
-    public string FullName { get; private set; } = string.Empty;
-    public string Country { get; private set; } = string.Empty;
-    public string Department { get; private set; } = string.Empty;
-    public string PrimaryEmail { get; private set; } = string.Empty;
-    public string PrimaryPhone { get; private set; } = string.Empty;
+    public Avatar Avatar { get; private set; } = null!;
+    public string PrimaryEmail { get; private set; }
+    public Phone? PrimaryPhone { get; private set; }
+    public Address? PrimaryAddress { get; private set; }
 
-    private readonly List<PaymentMethod> _paymentMethods = new();
-    public IReadOnlyCollection<PaymentMethod> PaymentMethods => _paymentMethods.AsReadOnly();
-
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-
-    // ctor vacío para EF
-    protected Profile() { }
-
-    public Profile(
-        long userId,
-        string fullName,
-        string country,
-        string department,
-        string primaryEmail,
-        string primaryPhone)
+    protected Profile() 
     {
+        UserId = new UserId(0);
+        FullName = string.Empty;
+        PrimaryEmail = string.Empty;
+        Avatar = Avatar.Empty;
+    }
+
+    public Profile(UserId userId, string fullName, string primaryEmail, Avatar avatar,
+                   string? bio = null, Phone? primaryPhone = null, Address? primaryAddress = null)
+    {
+        if (userId.Value <= 0) throw new ArgumentOutOfRangeException(nameof(userId));
+        if (string.IsNullOrWhiteSpace(fullName)) throw new ArgumentException("Full name required.", nameof(fullName));
+        if (string.IsNullOrWhiteSpace(primaryEmail)) throw new ArgumentException("Primary email required.", nameof(primaryEmail));
+
         UserId = userId;
-        FullName = fullName;
-        Country = country;
-        Department = department;
-        PrimaryEmail = primaryEmail;
+        FullName = fullName.Trim();
+        PrimaryEmail = primaryEmail.Trim();
+        Avatar = avatar ?? throw new ArgumentNullException(nameof(avatar));
+        Bio = string.IsNullOrWhiteSpace(bio) ? null : bio.Trim();
         PrimaryPhone = primaryPhone;
+        PrimaryAddress = primaryAddress;
     }
 
-    public void UpdateBasicInformation(
-        string fullName,
-        string country,
-        string department,
-        string primaryEmail,
-        string primaryPhone)
+    public void UpdateName(string fullName)
     {
-        FullName = fullName;
-        Country = country;
-        Department = department;
-        PrimaryEmail = primaryEmail;
-        PrimaryPhone = primaryPhone;
+        if (string.IsNullOrWhiteSpace(fullName)) throw new ArgumentException(nameof(fullName));
+        FullName = fullName.Trim();
     }
 
-    public void AddPaymentMethod(PaymentMethod paymentMethod)
+    public void UpdateBio(string? bio) => Bio = string.IsNullOrWhiteSpace(bio) ? null : bio.Trim();
+
+    public void UpdateEmail(string email)
     {
-        _paymentMethods.Add(paymentMethod);
+        if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException(nameof(email));
+        PrimaryEmail = email.Trim();
     }
 
-    public void RemovePaymentMethod(int paymentMethodId)
-    {
-        var method = _paymentMethods.FirstOrDefault(x => x.Id == paymentMethodId);
-        if (method is not null) _paymentMethods.Remove(method);
-    }
+    public void UpdatePhone(Phone? phone) => PrimaryPhone = phone;
+
+    public void UpdateAddress(Address? address) => PrimaryAddress = address;
+
+    public void UpdateAvatar(Avatar avatar) => Avatar = avatar ?? throw new ArgumentNullException(nameof(avatar));
 }

@@ -1,11 +1,14 @@
-﻿using RentalPeAPI.Profile.Domain.Model.Aggregates;
-using RentalPeAPI.Profile.Domain.Model.Queries;
+﻿using RentalPeAPI.Profile.Domain.Model.Commands;
 
-namespace RentalPeAPI.Profile.Domain.Services
+namespace RentalPeAPI.Profile.Domain.Services;
+
+public interface IProfileCommandService
 {
-    public interface IProfileQueryService
-    {
-        Task<Model.Aggregates.Profile?> Handle(GetProfileByIdQuery query);
-        Task<Model.Aggregates.Profile?> Handle(GetProfileByUserIdQuery query);
-    }
+    Task<Model.Aggregates.Profile?> Handle(CreateProfileCommand command);
+    Task<Model.Aggregates.Profile?> Handle(UpdateProfileNameCommand command);
+    Task<Model.Aggregates.Profile?> Handle(UpdateProfileBioCommand command);
+    Task<Model.Aggregates.Profile?> Handle(UpdateProfileEmailCommand command);
+    Task<Model.Aggregates.Profile?> Handle(UpdateProfilePhoneCommand command);
+    Task<Model.Aggregates.Profile?> Handle(UpdateProfileAddressCommand command);
+    Task<Model.Aggregates.Profile?> Handle(UpdateProfileAvatarCommand command);
 }

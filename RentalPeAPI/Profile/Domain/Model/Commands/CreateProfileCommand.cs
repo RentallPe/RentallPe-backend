@@ -1,10 +1,14 @@
-﻿namespace RentalPeAPI.Profile.Domain.Model.Commands;
+﻿using RentalPeAPI.Profile.Domain.Model.ValueObjects;
 
-/// <summary>Comando para crear un perfil.</summary>
-public record CreateProfileCommand(
-    long UserId,
+namespace RentalPeAPI.Profile.Domain.Model.Commands;
+
+
+
+public sealed record CreateProfileCommand(
+    UserId UserId,
     string FullName,
-    string Country,
-    string Department,
     string PrimaryEmail,
-    string PrimaryPhone);
+    Avatar Avatar,
+    string? Bio = null,
+    Phone? PrimaryPhone = null,
+    Address? PrimaryAddress = null);

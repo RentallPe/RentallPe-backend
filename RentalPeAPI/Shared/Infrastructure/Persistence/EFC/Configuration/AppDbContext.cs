@@ -1,14 +1,13 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
-using EFCore.NamingConventions; // NECESARIO para UseSnakeCaseNamingConvention
-
-// --- USINGS COMBINADOS (De ambos BCs) ---
-using RentalPeAPI.User.Domain; // Para AppUser (De izquierda)
-using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; // Para UserConfiguration (De izquierda)
-using RentalPeAPI.Property.Domain.Aggregates; // Para Space (De derecha)
-using RentalPeAPI.Property.Domain.Aggregates.Entities; // Para Service (De derecha)
-using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; // Para SpaceConfiguration (De derecha)
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions; // Para ApplyPaymentsConfiguration (De izquierda)
+using EFCore.NamingConventions; 
+using RentalPeAPI.User.Domain; 
+using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; 
+using RentalPeAPI.Property.Domain.Aggregates; 
+using RentalPeAPI.Property.Domain.Aggregates.Entities; 
+using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; 
+using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.Profile.Infrastructure.Persistence.EFC.configuration.extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
@@ -17,10 +16,10 @@ namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-    // --- DBSETS COMBINADOS (USER, SPACE, SERVICE) ---
-    public DbSet<AppUser> Users { get; set; } // De izquierda
-    public DbSet<Space> Spaces { get; set; } // De derecha
-    public DbSet<Service> Services { get; set; } // De derecha (Asumo que Service es un DbSet)
+   
+    public DbSet<AppUser> Users { get; set; } 
+    public DbSet<Space> Spaces { get; set; } 
+    public DbSet<Service> Services { get; set; } 
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -45,8 +44,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         // 1. User BC (Reglas de User)
         builder.ApplyConfiguration(new UserConfiguration()); 
         
-        // 2. Payment BC (De izquierda)
+        
         builder.ApplyPaymentsConfiguration();
+        builder.ApplyProfilesConfiguration();
+        
         
         // 3. Space BC (De derecha)
         builder.ApplyConfiguration(new SpaceConfiguration());

@@ -1,40 +1,28 @@
-﻿using ACME.LearningCenterPlatform.API.Profiles.Domain.Model.Aggregates;
-using ACME.LearningCenterPlatform.API.Profiles.Interfaces.REST.Resources;
+﻿using RentalPeAPI.Profile.Interfaces.REST.Resources;
 
-namespace ACME.LearningCenterPlatform.API.Profiles.Interfaces.REST.Transform;
+namespace RentalPeAPI.Profile.Interfaces.REST.Transform;
 
-/// <summary>
-///     Assembler to convert Profile entity to ProfileResource.
-/// </summary>
 public static class ProfileResourceFromEntityAssembler
 {
-    public static ProfileResource ToResourceFromEntity(Profile entity)
-    {
-        AddressResource? addressResource = null;
-
-        if (entity.PrimaryAddress is not null)
-        {
-            addressResource = new AddressResource(
-                entity.PrimaryAddress.Line1,
-                entity.PrimaryAddress.Line2,
-                entity.PrimaryAddress.District,
-                entity.PrimaryAddress.City,
-                entity.PrimaryAddress.State,
-                entity.PrimaryAddress.PostalCode,
-                entity.PrimaryAddress.Country);
-        }
-
-        return new ProfileResource(
+    public static ProfileResource ToResourceFromEntity(Domain.Model.Aggregates.Profile entity)
+        => new(
             entity.Id,
             entity.UserId.Value,
             entity.FullName,
-            entity.Country,
-            entity.Department,
             entity.Bio,
-            entity.AvatarUrl,
+            new AvatarResource(entity.Avatar.Url),
             entity.PrimaryEmail,
-            entity.PrimaryPhone,
-            addressResource,
-            entity.PaymentMethods);
-    }
+            entity.PrimaryPhone is null ? null : new PhoneResource(entity.PrimaryPhone.Number),
+            entity.PrimaryAddress is null
+                ? null
+                : new AddressResource(
+                    entity.PrimaryAddress.Line1,
+                    entity.PrimaryAddress.Line2,
+                    entity.PrimaryAddress.District,
+                    entity.PrimaryAddress.City,
+                    entity.PrimaryAddress.State,
+                    entity.PrimaryAddress.PostalCode,
+                    entity.PrimaryAddress.Country),
+            entity.CreatedDate
+        );
 }

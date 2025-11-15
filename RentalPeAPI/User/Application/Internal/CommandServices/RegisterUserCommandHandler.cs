@@ -1,23 +1,35 @@
 ﻿using MediatR;
-using RentalPeAPI.User.Domain.Repositories; // Necesario para IUserRepository
-using RentalPeAPI.User.Domain.Services;
-using RentalPeAPI.User.Domain; 
+using System; // Para Guid
+using System.Threading; // Para CancellationToken
 
+// --- USINGS FALTANTES Y ESENCIALES ---
+using RentalPeAPI.User.Domain; // <-- ¡Para la entidad AppUser! (Faltaba)
+using RentalPeAPI.User.Application.Internal.CommandServices; // <-- Para UserDto y RegisterUserCommand
 
+using RentalPeAPI.User.Domain.Services; // Para IPasswordHashingService
+// --- FIN USINGS ESENCIALES ---
+
+// --- 1. SOLUCIÓN: ALIAS para IUnitOfWork COMPARTIDO (Se mantiene) ---
 using SharedIUnitOfWork = RentalPeAPI.Shared.Domain.Repositories.IUnitOfWork;
+
+// --- 2. ELIMINAMOS la línea 'using RentalPeAPI.User.Domain.Repositories;' para evitar conflicto ---
+//    Y usamos la ruta completa para IUserRepository, que es la única clase que necesitamos.
 
 namespace RentalPeAPI.User.Application.Internal.CommandServices;
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, UserDto>
 {
-    private readonly IUserRepository _userRepository;
+    // Usamos la ruta completa para IUserRepository (Reemplaza el 'using' eliminado)
+    private readonly RentalPeAPI.User.Domain.Repositories.IUserRepository _userRepository; 
     private readonly IPasswordHashingService _passwordHashingService;
-    private readonly SharedIUnitOfWork _unitOfWork; // 2. Usamos el alias aquí
+    private readonly SharedIUnitOfWork _unitOfWork; 
 
     public RegisterUserCommandHandler(
-        IUserRepository userRepository, 
+        // Usamos la ruta completa para IUserRepository:
+        RentalPeAPI.User.Domain.Repositories.IUserRepository userRepository, 
         IPasswordHashingService passwordHashingService, 
-        SharedIUnitOfWork unitOfWork) // 3. Usamos el alias aquí
+        // Usamos el alias para el UnitOfWork:
+        SharedIUnitOfWork unitOfWork) 
     {
         _userRepository = userRepository;
         _passwordHashingService = passwordHashingService;
@@ -44,10 +56,8 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
 
         await _userRepository.AddAsync(user);
         
-        // El Unit of Work es el compartido
-        await _unitOfWork.CompleteAsync(); // Asumo que el método correcto es CompleteAsync()
+        await _unitOfWork.CompleteAsync(); // Usando el IUnitOfWork compartido
 
-      
         return new UserDto(user.Id, user.FullName, user.Email);
     }
 }

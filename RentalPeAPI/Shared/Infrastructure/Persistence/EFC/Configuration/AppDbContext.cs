@@ -1,6 +1,5 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
-using EFCore.NamingConventions; 
 using RentalPeAPI.User.Domain; 
 using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; 
 using RentalPeAPI.Property.Domain.Aggregates; 

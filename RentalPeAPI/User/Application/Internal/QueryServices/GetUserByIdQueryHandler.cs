@@ -24,7 +24,14 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
             return null;
         }
 
-        
-        return new UserDto(user.Id, user.FullName, user.Email);
+
+        return new UserDto(user.Id,
+            user.FullName,
+            user.Email, user.Phone, // NUE 2025-11-15 Braulio
+            user.CreatedAt, // NUE 2025-11-15 Braulio
+            user.Role, // NUE 2025-11-15 Braulio
+            user.ProviderId, // NUE 2025-11-15 Braulio
+            user.Photo // NUE 2025-11-15 Braulio);
+        );
     }
 }

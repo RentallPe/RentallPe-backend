@@ -24,7 +24,12 @@ public class UsersController : ControllerBase
         var command = new RegisterUserCommand(
             resource.FullName,
             resource.Email,
-            resource.Password
+            resource.Password,
+            resource.Phone,       // NUE 2025-11-15 Braulio
+            resource.Role,        // NUE 2025-11-15 Braulio
+            resource.ProviderId,  // NUE 2025-11-15 Braulio
+            resource.Photo        // NUE 2025-11-15 Braulio
+
         );
 
        

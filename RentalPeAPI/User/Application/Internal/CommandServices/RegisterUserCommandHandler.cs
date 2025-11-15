@@ -51,13 +51,26 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
             Guid.NewGuid(),
             command.FullName,
             command.Email,
-            hashedPassword
+            hashedPassword,
+            command.Phone, // NUE 2025-11-15 Braulio
+            command.Role, // NUE 2025-11-15 Braulio
+            command.ProviderId, // NUE 2025-11-15 Braulio
+            command.Photo // NUE 2025-11-15 Braulio
+
         );
 
         await _userRepository.AddAsync(user);
         
         await _unitOfWork.CompleteAsync(); // Usando el IUnitOfWork compartido
 
-        return new UserDto(user.Id, user.FullName, user.Email);
+        return new UserDto(
+            user.Id,
+            user.FullName,
+            user.Email,user.Phone, // NUE 2025-11-15 Braulio
+            user.CreatedAt, // NUE 2025-11-15 Braulio
+            user.Role, // NUE 2025-11-15 Braulio
+            user.ProviderId, // NUE 2025-11-15 Braulio
+            user.Photo // NUE 2025-11-15 Braulio
+        );
     }
 }

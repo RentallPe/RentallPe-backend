@@ -2,6 +2,10 @@ using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using EFCore.NamingConventions; // NECESARIO para UseSnakeCaseNamingConvention
 
+using RentalPeAPI.Combo.Domain.Aggregates.Entities;
+using RentalPeAPI.Combo.Infrastructure.Persistence.EFC.Configuration;
+
+// --- 2. ARREGLO: El namespace debe coincidir con la carpeta (EFC) ---
 // --- USINGS COMBINADOS (De ambos BCs) ---
 using RentalPeAPI.User.Domain; // Para AppUser (De izquierda)
 using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; // Para UserConfiguration (De izquierda)
@@ -19,6 +23,13 @@ namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    // --- 3. ARREGLO: Añade el DbSet para tu BC ---
+    public DbSet<Space> Spaces { get; set; } 
+    public DbSet<Service> Services { get; set; } 
+    public DbSet<Combo.Domain.Aggregates.Entities.Combo> Combos { get; set; } = default!;
+    
+    // (Aquí se añadirán AppUser, Payment, etc.)
+
     // --- DBSETS COMBINADOS (USER, SPACE, SERVICE) ---
     public DbSet<AppUser> Users { get; set; } // De izquierda
     public DbSet<Space> Spaces { get; set; } // De derecha
@@ -40,6 +51,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
         base.OnModelCreating(builder);
 
+        // Configuraciones de Property
         // --- ESTRUCTURA BASE DE FRAMEWORK (Remote) ---
         // Publishing Context
       //builder.ApplyPublishingConfiguration();
@@ -66,11 +78,19 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.ApplyConfiguration(new WorkItemConfiguration());
         builder.ApplyConfiguration(new IncidentConfiguration());
         builder.ApplyConfiguration(new NotificationConfiguration());
+
+        // Configuración de Combo
+        builder.ApplyConfiguration(new ComboConfiguration());
+
+        // (Aquí se añadirán UserConfiguration, etc.)
+
         // Configuración compartida
+        builder.UseSnakeCaseNamingConvention();
         builder.UseSnakeCaseNamingConvention(); 
 
        
 
        
     }
+
 }

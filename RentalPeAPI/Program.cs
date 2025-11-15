@@ -7,6 +7,14 @@ using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;           
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC; // Para AppDbContext
 
+// Usings del BC de Combo
+using RentalPeAPI.Combo.Application.Internal.CommandServices;
+using RentalPeAPI.Combo.Application.Internal.QueryServices;
+using RentalPeAPI.Combo.Domain.Repositories;
+using RentalPeAPI.Combo.Infrastructure.Persistence.EFC.Repositories;
+
+
+// Usings del BC de Property (que ya tenías)
 // Payment BC
 using RentalPeAPI.Payment.Domain.Repositories;
 using RentalPeAPI.Payment.Domain.Services;
@@ -90,6 +98,39 @@ builder.Services.AddScoped<IAnomalyDetectorService, AnomalyDetectorService>();
 builder.Services.AddScoped<IIoTDeviceRepository, IoTDeviceRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// 🔹 Servicios de aplicación y repositorios de Combo
+builder.Services.AddScoped<ComboCommandService>();
+builder.Services.AddScoped<ComboQueryService>();
+builder.Services.AddScoped<IComboRepository, ComboRepository>();
+
+
+// 🔹 Registra el UnitOfWork compartido (¡necesario para tu SpaceAppService!)
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// 🔹 Agregamos el DbContext (Tu código ya estaba bien)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new Exception("Database connection string not found.");
+
+
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+    if (builder.Environment.IsDevelopment())
+    {
+        options.LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
+    }
+});
+
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // --- EJECUCIÓN DE BASE DE DATOS (MANTIENE LA REGLA DEL EQUIPO) ---

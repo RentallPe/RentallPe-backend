@@ -124,6 +124,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddEndpointsApiExplorer();
+builder.WebHost.ConfigureKestrel(o =>
+{
+    o.ListenLocalhost(52888);                    
+    o.ListenLocalhost(52889, lo => lo.UseHttps()); 
+});
 
 var app = builder.Build();
 

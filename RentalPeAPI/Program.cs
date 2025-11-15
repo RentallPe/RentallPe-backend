@@ -57,13 +57,6 @@ builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
 // --- CONFIGURACIÓN DE BASE DE DATOS (MANTENIENDO EL ESTÁNDAR) ---
 var cs = builder.Configuration.GetConnectionString("DefaultConnection")
          ?? throw new Exception("Database connection string not found.");
-         
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    // Usamos MySQL con el paquete de Pomelo o el compatible (que resuelve conflictos)
-    opt.UseMySQL(cs) 
-       .LogTo(Console.WriteLine, LogLevel.Information)
-       .EnableSensitiveDataLogging()
-       .EnableDetailedErrors());
 
 // --- INYECCIÓN DE DEPENDENCIAS (COMBINADA) ---
 
@@ -71,7 +64,12 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();                          
 
 // 2. User BC
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly); // User
+    cfg.RegisterServicesFromAssembly(typeof(ComboCommandService).Assembly); // Combo
+    cfg.RegisterServicesFromAssembly(typeof(PaymentCommandService).Assembly); // Payment
+    // etc.
+});
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<ITokenGenerationService, TokenGenerationService>();
@@ -105,9 +103,6 @@ builder.Services.AddScoped<ComboQueryService>();
 builder.Services.AddScoped<IComboRepository, ComboRepository>();
 
 
-// 🔹 Registra el UnitOfWork compartido (¡necesario para tu SpaceAppService!)
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 // 🔹 Agregamos el DbContext (Tu código ya estaba bien)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -129,7 +124,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 

@@ -24,8 +24,7 @@ namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     // --- 3. ARREGLO: Añade el DbSet para tu BC ---
-    public DbSet<Space> Spaces { get; set; } 
-    public DbSet<Service> Services { get; set; } 
+
     public DbSet<Combo.Domain.Aggregates.Entities.Combo> Combos { get; set; } = default!;
     
     // (Aquí se añadirán AppUser, Payment, etc.)
@@ -72,8 +71,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
        
         builder.ApplyConfiguration(new ProjectConfiguration()); 
         builder.ApplyConfiguration(new IoTDeviceConfiguration());
-   
-        builder.ApplyConfiguration(new IncidentConfiguration());
+        
         builder.ApplyConfiguration(new ReadingConfiguration());
         builder.ApplyConfiguration(new WorkItemConfiguration());
         builder.ApplyConfiguration(new IncidentConfiguration());
@@ -86,7 +84,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Configuración compartida
         builder.UseSnakeCaseNamingConvention();
-        builder.UseSnakeCaseNamingConvention(); 
 
        
 

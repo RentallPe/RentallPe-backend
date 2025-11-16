@@ -61,36 +61,48 @@ builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
 // DbContext (Pomelo unificado)
 if (builder.Environment.IsDevelopment())
 {
-    // === CONFIGURACIÓN DE DESARROLLO (usa appsettings.json local) ===
+    // === CONFIGURACIÓN DE DESARROLLO ===
     var cs = builder.Configuration.GetConnectionString("DefaultConnection")
              ?? throw new Exception("Database connection string not found in Development.");
 
     builder.Services.AddDbContext<AppDbContext>(options =>
     {
-        options.UseMySql(cs, ServerVersion.AutoDetect(cs));
+        // AJUSTE CLAVE: Usamos .UseMySqlOptions() para forzar un comportamiento de SSL.
+        options.UseMySql(cs, ServerVersion.AutoDetect(cs), options =>
+        {
+            // Opcional, pero previene problemas de SSL/TLS
+            options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            
+            // Si la conexión falla, se pueden añadir parámetros específicos como
+            // SslMode=Required; TrustServerCertificate=True;
+            // Pero Azure ya requiere SslMode=Required en la cadena.
+        });
         
-        // Configuraciones de desarrollo
+        // Configuraciones de desarrollo...
         options.LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors();
     });
 }
-else // Esto se ejecuta en Producción (Render) y Staging
+else // Esto se ejecuta en Producción (Render)
 {
-    // === CONFIGURACIÓN DE PRODUCCIÓN (usa Variables de Entorno de Render) ===
+    // === CONFIGURACIÓN DE PRODUCCIÓN ===
     
-    // 1. Cargamos la configuración (prioriza variables de entorno)
-    //    Si definiste ConnectionStrings:DefaultConnection en Render, será usada aquí.
     var cs = builder.Configuration.GetConnectionString("DefaultConnection")
-             ?? throw new Exception("Database connection string not found in Production. Please set the 'ConnectionStrings:DefaultConnection' environment variable.");
+             ?? throw new Exception("Database connection string not found in Production. Please set the 'ConnectionStrings__DefaultConnection' environment variable.");
 
     builder.Services.AddDbContext<AppDbContext>(options =>
     {
-        options.UseMySql(cs, ServerVersion.AutoDetect(cs));
+        // AJUSTE CLAVE: Usamos .UseMySqlOptions() para forzar un comportamiento de SSL.
+        options.UseMySql(cs, ServerVersion.AutoDetect(cs), options =>
+        {
+            // Opcional: permite que la aplicación reintente la conexión si falla temporalmente.
+            options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        });
         
-        // Configuraciones de producción
+        // Configuraciones de producción...
         options.LogTo(Console.WriteLine, LogLevel.Error)
-            .EnableDetailedErrors(); // Dejo errores detallados por si hay problemas de migración
+            .EnableDetailedErrors(); 
     });
 }
 

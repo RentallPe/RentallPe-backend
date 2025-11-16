@@ -59,52 +59,43 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
 
 // DbContext (Pomelo unificado)
-if (builder.Environment.IsDevelopment())
-{
-    // === CONFIGURACIÓN DE DESARROLLO ===
-    var cs = builder.Configuration.GetConnectionString("DefaultConnection")
-             ?? throw new Exception("Database connection string not found in Development.");
+// El constructor de AppDbContext debe aceptar DbContextOptions<AppDbContext>
+// No necesita parámetros adicionales.
 
-    builder.Services.AddDbContext<AppDbContext>(options =>
+// Función para añadir DbContext, simplificando la lógica
+void AddMySqlDbContext(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+{
+    var cs = configuration.GetConnectionString("DefaultConnection")
+             ?? throw new Exception($"Database connection string 'DefaultConnection' not found in {environment.EnvironmentName}.");
+
+    services.AddDbContext<AppDbContext>(options =>
     {
-        // AJUSTE CLAVE: Usamos .UseMySqlOptions() para forzar un comportamiento de SSL.
-        options.UseMySql(cs, ServerVersion.AutoDetect(cs), options =>
+        // Usamos la sobrecarga que permite pasar opciones de MySQL
+        options.UseMySql(cs, ServerVersion.AutoDetect(cs), mySqlOptions =>
         {
-            // Opcional, pero previene problemas de SSL/TLS
-            options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            
-            // Si la conexión falla, se pueden añadir parámetros específicos como
-            // SslMode=Required; TrustServerCertificate=True;
-            // Pero Azure ya requiere SslMode=Required en la cadena.
+            // Opcional: Esto ayuda a que la aplicación no se caiga por fallas temporales
+            mySqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
         });
-        
-        // Configuraciones de desarrollo...
-        options.LogTo(Console.WriteLine, LogLevel.Information)
-            .EnableSensitiveDataLogging()
-            .EnableDetailedErrors();
+
+        if (environment.IsDevelopment())
+        {
+            options.LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors();
+        }
+        else // Producción
+        {
+            options.LogTo(Console.WriteLine, LogLevel.Error)
+                .EnableDetailedErrors();
+        }
     });
 }
-else // Esto se ejecuta en Producción (Render)
-{
-    // === CONFIGURACIÓN DE PRODUCCIÓN ===
-    
-    var cs = builder.Configuration.GetConnectionString("DefaultConnection")
-             ?? throw new Exception("Database connection string not found in Production. Please set the 'ConnectionStrings__DefaultConnection' environment variable.");
 
-    builder.Services.AddDbContext<AppDbContext>(options =>
-    {
-        // AJUSTE CLAVE: Usamos .UseMySqlOptions() para forzar un comportamiento de SSL.
-        options.UseMySql(cs, ServerVersion.AutoDetect(cs), options =>
-        {
-            // Opcional: permite que la aplicación reintente la conexión si falla temporalmente.
-            options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-        });
-        
-        // Configuraciones de producción...
-        options.LogTo(Console.WriteLine, LogLevel.Error)
-            .EnableDetailedErrors(); 
-    });
-}
+// Llama a la función de configuración
+AddMySqlDbContext(builder.Services, builder.Configuration, builder.Environment);
 
 // DI compartido
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -59,19 +59,40 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
 
 // DbContext (Pomelo unificado)
-var cs = builder.Configuration.GetConnectionString("DefaultConnection")
-         ?? throw new Exception("Database connection string not found.");
-
-builder.Services.AddDbContext<AppDbContext>(options =>
+if (builder.Environment.IsDevelopment())
 {
-    options.UseMySql(cs, ServerVersion.AutoDetect(cs));
-    if (builder.Environment.IsDevelopment())
+    // === CONFIGURACIÓN DE DESARROLLO (usa appsettings.json local) ===
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection")
+             ?? throw new Exception("Database connection string not found in Development.");
+
+    builder.Services.AddDbContext<AppDbContext>(options =>
     {
+        options.UseMySql(cs, ServerVersion.AutoDetect(cs));
+        
+        // Configuraciones de desarrollo
         options.LogTo(Console.WriteLine, LogLevel.Information)
-               .EnableSensitiveDataLogging()
-               .EnableDetailedErrors();
-    }
-});
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
+    });
+}
+else // Esto se ejecuta en Producción (Render) y Staging
+{
+    // === CONFIGURACIÓN DE PRODUCCIÓN (usa Variables de Entorno de Render) ===
+    
+    // 1. Cargamos la configuración (prioriza variables de entorno)
+    //    Si definiste ConnectionStrings:DefaultConnection en Render, será usada aquí.
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection")
+             ?? throw new Exception("Database connection string not found in Production. Please set the 'ConnectionStrings:DefaultConnection' environment variable.");
+
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseMySql(cs, ServerVersion.AutoDetect(cs));
+        
+        // Configuraciones de producción
+        options.LogTo(Console.WriteLine, LogLevel.Error)
+            .EnableDetailedErrors(); // Dejo errores detallados por si hay problemas de migración
+    });
+}
 
 // DI compartido
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

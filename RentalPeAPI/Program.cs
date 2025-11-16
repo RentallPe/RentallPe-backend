@@ -150,7 +150,7 @@ builder.Services.AddScoped<IAnomalyDetectorService, AnomalyDetectorService>();
 builder.Services.AddScoped<INotificationService,    NotificationService>();
 
 // Kestrel: solo HTTP para evitar warning de certificado y mixed content
-builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(52888));
+//builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(52888));
 
 var app = builder.Build();
 

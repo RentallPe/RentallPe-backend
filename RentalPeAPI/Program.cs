@@ -176,7 +176,10 @@ var loc = new RequestLocalizationOptions()
     .AddSupportedUICultures(cultures);
 loc.ApplyCurrentCultureToResponseHeaders = true;
 app.UseRequestLocalization(loc);
-
+app.MapGet("/", context => {
+    context.Response.Redirect("/swagger", permanent: true);
+    return Task.CompletedTask;
+});
 // Pipeline
 // app.UseHttpsRedirection(); // deshabilitado: solo HTTP
 app.UseAuthorization();

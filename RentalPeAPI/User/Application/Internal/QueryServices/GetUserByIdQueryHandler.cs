@@ -1,5 +1,9 @@
 ﻿using MediatR;
-using RentalPeAPI.User.Application.Internal.CommandServices;
+using System.Linq; // Para Select sobre PaymentMethods
+using System.Threading;
+using System.Threading.Tasks;
+
+using RentalPeAPI.User.Application.Internal.CommandServices; // UserDto, PaymentMethodDto
 using RentalPeAPI.User.Domain.Repositories;
 
 namespace RentalPeAPI.User.Application.Internal.QueryServices;
@@ -15,23 +19,36 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
 
     public async Task<UserDto?> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
-      
+        // Traemos el usuario desde el repositorio
         var user = await _userRepository.GetByIdAsync(query.UserId);
 
-       
         if (user is null)
         {
             return null;
         }
 
+        // Mapeamos la lista de PaymentMethods del dominio al DTO
+        var paymentMethodsDto = user.PaymentMethods
+            .Select(pm => new PaymentMethodDto(
+                pm.Id,
+                pm.Type,
+                pm.Number,
+                pm.Expiry,
+                pm.Cvv
+            ))
+            .ToList();
 
-        return new UserDto(user.Id,
+        // Devolvemos el UserDto completo, incluyendo paymentMethods
+        return new UserDto(
+            user.Id,
             user.FullName,
-            user.Email, user.Phone, // NUE 2025-11-15 Braulio
-            user.CreatedAt, // NUE 2025-11-15 Braulio
-            user.Role, // NUE 2025-11-15 Braulio
+            user.Email,
+            user.Phone,      // NUE 2025-11-15 Braulio
+            user.CreatedAt,  // NUE 2025-11-15 Braulio
+            user.Role,       // NUE 2025-11-15 Braulio
             user.ProviderId, // NUE 2025-11-15 Braulio
-            user.Photo // NUE 2025-11-15 Braulio);
+            user.Photo,      // NUE 2025-11-15 Braulio
+            paymentMethodsDto
         );
     }
 }

@@ -37,19 +37,22 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     // (Aquí se añadirán AppUser, Payment, etc.)
 
     // --- DBSETS COMBINADOS (USER, SPACE, SERVICE) ---
-    public DbSet<AppUser> Users { get; set; } // De izquierda
-    public DbSet<Space> Spaces { get; set; } // De derecha
-    public DbSet<Service> Services { get; set; } // De derecha (Asumo que Service es un DbSet)
+    public DbSet<User.Domain.User> Users { get; set; }              // De izquierda
+   
+
+    public DbSet<Space> Spaces { get; set; }               // De derecha
+    public DbSet<Service> Services { get; set; }           // De derecha
     public DbSet<IoTDevice> IoTDevices { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<Incident> Incidents { get; set; } // <--- ¡Añade esto!
     public DbSet<Reading> Readings { get; set; } // <--- ¡Añade esto!
     public DbSet<WorkItem> Tasks { get; set; } // <--- ¡Añade esto!
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<PaymentMethod> PaymentMethods { get; set; } = default!;
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
-        builder.AddCreatedUpdatedInterceptor();
+       // builder.AddCreatedUpdatedInterceptor();
         base.OnConfiguring(builder);
     }
 
@@ -59,19 +62,21 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // --- ESTRUCTURA BASE DE FRAMEWORK (Remote) ---
         // Publishing Context
-      //builder.ApplyPublishingConfiguration();
-      // Profiles Context
-      //builder.ApplyProfilesConfiguration();
+        //builder.ApplyPublishingConfiguration();
+        // Profiles Context
+        //builder.ApplyProfilesConfiguration();
         
         // --- APLICACIÓN DE CONFIGURACIONES (Combinación de todos los BCs) ---
         
         // 1. User BC (Reglas de User)
         builder.ApplyConfiguration(new UserConfiguration()); 
+        builder.ApplyConfiguration(new PaymentMethodConfiguration());
+        // 🔗 Relación User (1) ─── (*) PaymentMethods
+        
         
         // 2. Payment BC (De izquierda)
         builder.ApplyPaymentsConfiguration();
         builder.ApplyProfilesConfiguration();
-        
         
         // 3. Space BC (De derecha)
         builder.ApplyConfiguration(new SpaceConfiguration());
@@ -92,9 +97,5 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Configuración compartida
         builder.UseSnakeCaseNamingConvention();
-
-       
-
-       
     }
 }

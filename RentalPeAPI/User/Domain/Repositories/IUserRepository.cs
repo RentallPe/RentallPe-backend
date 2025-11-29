@@ -3,7 +3,7 @@
 public interface IUserRepository
 {
     Task<bool> UserExistsByEmailAsync(string email);
-    Task AddAsync(AppUser appUser);
-    Task<AppUser?> GetByEmailAsync(string email);
-    Task<AppUser?> GetByIdAsync(Guid id);
+    Task AddAsync(User user);
+    Task<User?> GetByEmailAsync(string email);
+    Task<User?> GetByIdAsync(Guid id);
 }

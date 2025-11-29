@@ -18,26 +18,24 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser([FromBody] RegisterUserResource resource)
+    public async Task<ActionResult<UserDto>> RegisterUser([FromBody] RegisterUserResource resource)
     {
-        
         var command = new RegisterUserCommand(
             resource.FullName,
             resource.Email,
             resource.Password,
-            resource.Phone,       // NUE 2025-11-15 Braulio
-            resource.Role,        // NUE 2025-11-15 Braulio
-            resource.ProviderId,  // NUE 2025-11-15 Braulio
-            resource.Photo        // NUE 2025-11-15 Braulio
-
+            resource.Phone,
+            resource.Role,
+            resource.ProviderId,
+            resource.Photo
         );
 
-       
         var userDto = await _mediator.Send(command);
 
-     
+        // Ahora Swagger sabe que la respuesta es UserDto
         return CreatedAtAction(nameof(GetUserById), new { userId = userDto.Id }, userDto);
     }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginResource resource)
     {
@@ -50,21 +48,33 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            
             return Unauthorized(new { message = ex.Message }); 
         }
     }
     
     [HttpGet("{userId:guid}")] 
-    public async Task<IActionResult> GetUserById(Guid userId)
+    public async Task<ActionResult<UserDto>> GetUserById(Guid userId)
     {
-        
         var query = new GetUserByIdQuery(userId);
-
-        
         var userDto = await _mediator.Send(query);
 
-        
-        return userDto is null ? NotFound() : Ok(userDto);
+        if (userDto is null) return NotFound();
+
+        return Ok(userDto);
+    }
+    
+    [HttpPost("{userId:guid}/payment-methods")]
+    public async Task<ActionResult<UserDto>> AddPaymentMethod(Guid userId, [FromBody] AddPaymentMethodResource resource)
+    {
+        var command = new AddPaymentMethodCommand(
+            userId,
+            resource.Type,
+            resource.Number,
+            resource.Expiry,
+            resource.Cvv
+        );
+
+        var userDto = await _mediator.Send(command);
+        return Ok(userDto);
     }
 }

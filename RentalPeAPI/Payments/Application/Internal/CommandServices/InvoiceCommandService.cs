@@ -16,7 +16,7 @@ public class InvoiceCommandService(
         var payment = await paymentRepository.FindByIdAsync(command.PaymentId);
         if (payment is null) return null;
 
-        // Evita duplicado por PaymentId (1–1)
+       
         var existing = (await invoiceRepository.FindByPaymentIdAsync(command.PaymentId)).FirstOrDefault();
         if (existing is not null) return null;
 

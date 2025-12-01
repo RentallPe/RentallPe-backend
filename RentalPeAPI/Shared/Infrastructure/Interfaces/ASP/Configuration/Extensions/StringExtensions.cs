@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace ACME.LearningCenterPlatform.API.Shared.Infrastructure.Interfaces.ASP.Configuration.Extensions;
+namespace RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration.Extensions;
 
 /// <summary>
 /// Provides extension methods for string manipulation related to ASP.NET configuration.
@@ -8,7 +8,8 @@ namespace ACME.LearningCenterPlatform.API.Shared.Infrastructure.Interfaces.ASP.C
 public static partial class StringExtensions
 {
     [GeneratedRegex("(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])", RegexOptions.Compiled)]
-    private static partial Regex KebabCaseRegex();
+    private static partial Regex KebabCaseRegex()
+        ;
 
     /// <summary>
     /// Converts a string to kebab-case casing, e.g. "MyString" becomes "my-string"

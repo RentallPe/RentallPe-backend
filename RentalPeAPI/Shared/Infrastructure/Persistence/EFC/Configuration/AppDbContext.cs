@@ -11,6 +11,7 @@ using EFCore.NamingConventions; // NECESARIO para UseSnakeCaseNamingConvention
 
 using RentalPeAPI.Combo.Domain.Aggregates.Entities;
 using RentalPeAPI.Combo.Infrastructure.Persistence.EFC.Configuration;
+using RentalPeAPI.Monitoring.Domain.Entities;
 
 // --- 2. ARREGLO: El namespace debe coincidir con la carpeta (EFC) ---
 // --- USINGS COMBINADOS (De ambos BCs) ---
@@ -20,7 +21,7 @@ using RentalPeAPI.Property.Domain.Aggregates; // Para Space (De derecha)
 using RentalPeAPI.Property.Domain.Aggregates.Entities; // Para Service (De derecha)
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; // Para SpaceConfiguration (De derecha)
 using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions; // Para ApplyPaymentsConfiguration (De izquierda)
-using RentalPeAPI.Monitoring.Domain.Entities;
+using RentalPeAPI.Monitoring.Domain.Model.Aggregates;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Configuration;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 

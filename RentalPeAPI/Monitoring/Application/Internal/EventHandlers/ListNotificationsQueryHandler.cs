@@ -1,9 +1,10 @@
 ﻿// Monitoring/Application/Internal/QueryServices/ListNotificationsQueryHandler.cs
-using MediatR;
-using RentalPeAPI.Monitoring.Domain.Repositories;
-using RentalPeAPI.Monitoring.Domain.Entities; 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
+using RentalPeAPI.Monitoring.Domain.Entities;
+using RentalPeAPI.Monitoring.Domain.Repositories;
 
 namespace RentalPeAPI.Monitoring.Application.Internal.QueryServices;
 
@@ -17,10 +18,11 @@ public class ListNotificationsQueryHandler
         _notificationRepository = notificationRepository;
     }
 
-    public async Task<IEnumerable<Notification>> Handle(ListNotificationsQuery query, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Notification>> Handle(
+        ListNotificationsQuery query, 
+        CancellationToken cancellationToken)
     {
-        // Esto asume que tienes un método ListByProjectId en tu repositorio
-        // (Si no lo tienes, usa un ListAsync simple en la implementación)
+        // Lista las notificaciones por proyecto
         return await _notificationRepository.ListByProjectIdAsync(query.ProjectId);
     }
 }

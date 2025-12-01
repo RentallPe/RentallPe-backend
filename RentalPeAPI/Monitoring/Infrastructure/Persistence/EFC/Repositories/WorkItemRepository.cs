@@ -1,9 +1,11 @@
-﻿// Monitoring/Infrastructure/Persistence/EFC/Repositories/TaskRepository.cs
-using Microsoft.EntityFrameworkCore;
+﻿// Monitoring/Infrastructure/Persistence/EFC/Repositories/WorkItemRepository.cs
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using RentalPeAPI.Monitoring.Domain.Entities; 
+using Microsoft.EntityFrameworkCore;
+using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Repositories;
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 namespace RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 
@@ -16,15 +18,20 @@ public class WorkItemRepository : IWorkItemRepository
         _context = context;
     }
 
-    
     public async Task AddAsync(WorkItem workItem)
     {
         await _context.Tasks.AddAsync(workItem);
     }
 
-    
     public async Task<WorkItem?> FindByIdAsync(int id)
     {
         return await _context.Tasks.FindAsync(id);
+    }
+
+    public async Task<IEnumerable<WorkItem>> ListByProjectIdAsync(int projectId)
+    {
+        return await _context.Tasks
+            .Where(t => t.ProjectId == projectId)
+            .ToListAsync();
     }
 }

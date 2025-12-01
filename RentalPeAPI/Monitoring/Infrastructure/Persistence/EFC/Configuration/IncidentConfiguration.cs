@@ -9,26 +9,68 @@ public class IncidentConfiguration : IEntityTypeConfiguration<Incident>
 {
     public void Configure(EntityTypeBuilder<Incident> builder)
     {
-        builder.ToTable("incidents"); 
+        // Nombre de tabla; con UseSnakeCaseNamingConvention ya quedaría "incidents"
+        builder.ToTable("incidents");
 
+        // PK
         builder.HasKey(i => i.Id);
-        builder.Property(i => i.Id).HasColumnName("id").IsRequired();
-        
-        // FKs
-        builder.Property(i => i.ProjectId).HasColumnName("project_id").IsRequired();
-        builder.Property(i => i.IoTDeviceId).HasColumnName("iot_device_id").IsRequired();
-        builder.Property(i => i.AcknowledgedByUserId).HasColumnName("acknowledged_by_user_id").IsRequired(false);
 
-        // Propiedades
-        builder.Property(i => i.Description).HasColumnName("description").HasMaxLength(500).IsRequired();
-        builder.Property(i => i.Severity).HasColumnName("severity").HasMaxLength(20).IsRequired();
-        builder.Property(i => i.Status).HasColumnName("status").HasMaxLength(20).IsRequired();
-        builder.Property(i => i.ReportedAt).HasColumnName("reported_at");
-        builder.Property(i => i.AcknowledgedAt).HasColumnName("acknowledged_at").IsRequired(false);
-        builder.Property(i => i.ResolvedAt).HasColumnName("resolved_at").IsRequired(false);
+        builder.Property(i => i.Id)
+            .HasColumnName("id")
+            .IsRequired();
+
+        // FKs / relaciones simples
+        builder.Property(i => i.ProjectId)
+            .HasColumnName("project_id")
+            .IsRequired();
+
+        builder.Property(i => i.IoTDeviceId)
+            .HasColumnName("iot_device_id")
+            .IsRequired();
+
+        builder.Property(i => i.AcknowledgedByUserId)
+            .HasColumnName("acknowledged_by_user_id")
+            .IsRequired(false);
+
+        // Propiedades principales (las que el front ve en el JSON)
+        builder.Property(i => i.Description)
+            .HasColumnName("description")
+            .HasMaxLength(500)
+            .IsRequired();
+
+        builder.Property(i => i.Status)
+            .HasColumnName("status")
+            .HasMaxLength(20)
+            .IsRequired();
+
+        // NUEVO: mapeo para createdAt / updatedAt del dbjson
+        builder.Property(i => i.CreatedAt)
+            .HasColumnName("created_at")
+            .IsRequired();
+
+        builder.Property(i => i.UpdatedAt)
+            .HasColumnName("updated_at")
+            .IsRequired(false);
+
+        // Campos de dominio adicionales (no tienen por qué salir al front)
+        builder.Property(i => i.Severity)
+            .HasColumnName("severity")
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(i => i.ReportedAt)
+            .HasColumnName("reported_at");
+
+        builder.Property(i => i.AcknowledgedAt)
+            .HasColumnName("acknowledged_at")
+            .IsRequired(false);
+
+        builder.Property(i => i.ResolvedAt)
+            .HasColumnName("resolved_at")
+            .IsRequired(false);
 
         // Índices
-        builder.HasIndex(i => i.ProjectId); 
-        builder.HasIndex(i => i.IoTDeviceId); 
+        builder.HasIndex(i => i.ProjectId);
+        builder.HasIndex(i => i.IoTDeviceId);
     }
 }

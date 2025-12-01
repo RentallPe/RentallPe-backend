@@ -1,16 +1,15 @@
-﻿// Monitoring/Interfaces/REST/Controllers/IoTDevicesController.cs
+﻿using System.Linq;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using RentalPeAPI.Monitoring.Application.Internal.CommandServices;
 using RentalPeAPI.Monitoring.Application.Internal.QueryServices;
-using RentalPeAPI.Monitoring.Domain.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using RentalPeAPI.Monitoring.Application.Internal.CommandServices; 
 using RentalPeAPI.Monitoring.Interfaces.REST.Resources;
+
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
 [ApiController]
-[Route("api/v1/monitoring/[controller]")] 
+[Route("api/v1/monitoring/[controller]")]
 public class IoTDevicesController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -19,40 +18,48 @@ public class IoTDevicesController : ControllerBase
     {
         _mediator = mediator;
     }
-    /// <summary>
-    /// POST: Registra un nuevo dispositivo IoT.
-    /// </summary>
+
     [HttpPost]
     public async Task<IActionResult> CreateDevice([FromBody] CreateIoTDeviceResource resource)
     {
-        
         var command = new CreateIoTDeviceCommand(
-            resource.ProjectId, 
-            resource.Name, 
-            resource.SerialNumber, 
-            resource.Type
+            resource.ProjectId,
+            resource.Type,
+            resource.Name,
+            resource.SerialNumber
         );
 
-        
-        var newDevice = await _mediator.Send(command);
+        var device = await _mediator.Send(command);
 
-       
+        var deviceResource = new IoTDeviceResource(
+            device.Id,
+            device.ProjectId,
+            device.Type,
+            device.Status,
+            device.InstalledAt
+        );
+
         return CreatedAtAction(
-            nameof(ListDevicesByProject), 
-            new { projectId = newDevice.ProjectId }, 
-            newDevice 
+            nameof(ListDevicesByProject),
+            new { projectId = device.ProjectId },
+            deviceResource
         );
     }
-    /// <summary>
-    /// GET: Lista todos los dispositivos instalados para un proyecto.
-    /// </summary>
-    [HttpGet("project/{projectId:int}")]
-    public async Task<IActionResult> ListDevicesByProject(int projectId)
+
+    [HttpGet("project/{projectId:long}")]
+    public async Task<IActionResult> ListDevicesByProject(long projectId)
     {
         var query = new ListIoTDevicesByProjectQuery(projectId);
         var devices = await _mediator.Send(query);
-        
-        
-        return Ok(devices); 
+
+        var resources = devices.Select(d => new IoTDeviceResource(
+            d.Id,
+            d.ProjectId,
+            d.Type,
+            d.Status,
+            d.InstalledAt
+        ));
+
+        return Ok(resources);
     }
 }

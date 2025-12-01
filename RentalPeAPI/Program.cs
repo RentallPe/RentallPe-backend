@@ -46,7 +46,7 @@ using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Monitoring.Infrastructure.Services;
 using RentalPeAPI.Monitoring.Domain.Services;
-
+using RentalPeAPI.Monitoring.Application.ACL;
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC + localization
@@ -57,7 +57,7 @@ builder.Services.AddControllers(o => o.Conventions.Add(new KebabCaseRouteNamingC
 // Swagger (solo Swashbuckle)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
-
+builder.Services.AddScoped<MonitoringContextFacade>();
 // DbContext (Pomelo unificado)
 // El constructor de AppDbContext debe aceptar DbContextOptions<AppDbContext>
 // No necesita parámetros adicionales.

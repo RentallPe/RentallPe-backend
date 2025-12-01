@@ -16,11 +16,6 @@ using RentalPeAPI.Combo.Domain.Repositories;
 using RentalPeAPI.Combo.Infrastructure.Persistence.EFC.Repositories;
 
 // Payment BC
-using RentalPeAPI.Payment.Domain.Repositories;
-using RentalPeAPI.Payment.Domain.Services;
-using RentalPeAPI.Payment.Application.Internal.CommandServices;
-using RentalPeAPI.Payment.Application.Internal.QueryServices;
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.Repositories;
 
 // User BC
 using RentalPeAPI.User.Application.Internal.CommandServices;
@@ -46,6 +41,11 @@ using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Monitoring.Infrastructure.Services;
 using RentalPeAPI.Monitoring.Domain.Services;
+using RentalPeAPI.Payments.Application.Internal.CommandServices;
+using RentalPeAPI.Payments.Application.Internal.QueryServices;
+using RentalPeAPI.Payments.Domain.Repositories;
+using RentalPeAPI.Payments.Domain.Services;
+using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -4,8 +4,7 @@ using RentalPeAPI.User.Domain;
 using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; 
 using RentalPeAPI.Property.Domain.Aggregates; 
 using RentalPeAPI.Property.Domain.Aggregates.Entities; 
-using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; 
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Profile.Infrastructure.Persistence.EFC.configuration.extensions;
 using EFCore.NamingConventions; // NECESARIO para UseSnakeCaseNamingConvention
 
@@ -19,9 +18,10 @@ using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; // Para Use
 using RentalPeAPI.Property.Domain.Aggregates; // Para Space (De derecha)
 using RentalPeAPI.Property.Domain.Aggregates.Entities; // Para Service (De derecha)
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; // Para SpaceConfiguration (De derecha)
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions; // Para ApplyPaymentsConfiguration (De izquierda)
+// Para ApplyPaymentsConfiguration (De izquierda)
 using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Configuration;
+using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 

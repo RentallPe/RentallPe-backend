@@ -1,10 +1,10 @@
 ﻿// Monitoring/Interfaces/REST/Controllers/NotificationsController.cs
+using System.Linq;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RentalPeAPI.Monitoring.Application.Internal.QueryServices;
-using RentalPeAPI.Monitoring.Domain.Entities; 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using RentalPeAPI.Monitoring.Interfaces.REST.Resources;
 
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
@@ -20,14 +20,24 @@ public class NotificationsController : ControllerBase
     }
 
     /// <summary>
-    /// GET: Obtiene el historial de notificaciones enviadas para un proyecto.
+    /// GET: Obtiene el historial de notificaciones para un proyecto,
+    /// con el mismo shape que el "notifications" del db.json.
     /// </summary>
     [HttpGet("project/{projectId:int}")]
     public async Task<IActionResult> ListNotificationsByProject(int projectId)
     {
         var query = new ListNotificationsQuery(projectId);
         var notifications = await _mediator.Send(query);
-        
-        return Ok(notifications); 
+
+        // Mapear entidad de dominio -> DTO para el front
+        var resources = notifications.Select(n => new NotificationResource(
+            n.Id,
+            n.UserId,
+            n.ProjectId,
+            n.Message,
+            n.CreatedAt
+        ));
+
+        return Ok(resources);
     }
 }

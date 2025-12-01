@@ -1,14 +1,18 @@
-﻿// Monitoring/Domain/Repositories/ITaskRepository.cs
+﻿// Monitoring/Domain/Repositories/IWorkItemRepository.cs
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using RentalPeAPI.Monitoring.Domain.Entities;
-
-
 
 namespace RentalPeAPI.Monitoring.Domain.Repositories;
 
 public interface IWorkItemRepository
 {
-    
-    Task AddAsync(WorkItem workItem); 
+    // Crear un nuevo work item
+    Task AddAsync(WorkItem workItem);
+
+    // Buscar uno por su Id (PK)
     Task<WorkItem?> FindByIdAsync(int id);
+
+    // Listar todas las tareas asociadas a un proyecto
+    Task<IEnumerable<WorkItem>> ListByProjectIdAsync(int projectId);
 }

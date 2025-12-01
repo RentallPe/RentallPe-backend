@@ -124,6 +124,7 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<ITokenGenerationService,   TokenGenerationService>();
+builder.Services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
 
 // Combo
 builder.Services.AddScoped<IComboRepository, ComboRepository>();

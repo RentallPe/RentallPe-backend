@@ -1,11 +1,10 @@
 ﻿// Monitoring/Infrastructure/Persistence/EFC/Repositories/ReadingRepository.cs
+using System.Linq; 
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
-using System.Threading.Tasks; 
-
-
 
 namespace RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 
@@ -18,7 +17,6 @@ public class ReadingRepository : IReadingRepository
         _context = context;
     }
 
-    
     public async Task AddAsync(Reading reading) 
     {
         await _context.Readings.AddAsync(reading);

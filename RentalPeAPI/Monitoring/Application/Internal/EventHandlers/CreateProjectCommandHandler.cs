@@ -1,11 +1,10 @@
 ﻿
-using MediatR;
-using RentalPeAPI.Monitoring.Domain.Repositories;
-using RentalPeAPI.Monitoring.Domain.Entities;
-using RentalPeAPI.Shared.Domain.Repositories; 
 using System.Threading;
 using System.Threading.Tasks;
-using System;
+using MediatR;
+using RentalPeAPI.Monitoring.Domain.Entities;
+using RentalPeAPI.Monitoring.Domain.Repositories;
+using RentalPeAPI.Shared.Domain.Repositories;
 
 namespace RentalPeAPI.Monitoring.Application.Internal.CommandServices;
 
@@ -22,21 +21,19 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
     public async Task<int> Handle(CreateProjectCommand command, CancellationToken cancellationToken)
     {
-        // 1. Crear la entidad
+    
         var project = new Project(
-            command.PropertyId,
             command.UserId,
             command.Name,
             command.Description,
             command.StartDate,
+            command.PropertyId,
             command.EndDate
         );
 
-        // 2. Persistir
         await _projectRepository.AddAsync(project);
         await _unitOfWork.CompleteAsync();
 
-        // 3. Devolver PK (Id)
         return project.Id;
     }
 }

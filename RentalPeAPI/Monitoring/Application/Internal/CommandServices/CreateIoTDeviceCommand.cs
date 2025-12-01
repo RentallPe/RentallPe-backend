@@ -1,12 +1,11 @@
-﻿
-using MediatR;
-using RentalPeAPI.Monitoring.Domain.Entities;
+﻿using MediatR;
+using RentalPeAPI.Monitoring.Domain.Model.Aggregates;
 
 namespace RentalPeAPI.Monitoring.Application.Internal.CommandServices;
 
 public record CreateIoTDeviceCommand(
-    int ProjectId,
-    string Name,
-    string SerialNumber,
-    string Type
-) : IRequest<IoTDevice>; 
+    long ProjectId,
+    string Type,
+    string? Name,
+    string? SerialNumber
+) : IRequest<IoTDevice>;

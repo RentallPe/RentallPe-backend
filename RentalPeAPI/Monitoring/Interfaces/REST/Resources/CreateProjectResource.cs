@@ -5,44 +5,51 @@ using System.Text.Json.Serialization;
 
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Resources;
 
-// Se usa la sintaxis de propiedad COMPLETA para permitir los atributos [Required] y [JsonPropertyName]
+// Usamos propiedades con init para que funcione bien con el binder de ASP.NET
 public record CreateProjectResource
 {
-    [Required] 
-    [JsonPropertyName("propertyId")] 
-    public long PropertyId { get; init; }
+    [Required]
+    [JsonPropertyName("userId")]
+    public Guid UserId { get; init; }   // obligatorio
 
-    [Required] 
-    [JsonPropertyName("userId")] 
-    public Guid UserId { get; init; } 
-
-    [Required] 
-    [JsonPropertyName("name")] 
+    [Required]
+    [JsonPropertyName("name")]
     public string Name { get; init; } = default!;
 
-    [Required] 
-    [JsonPropertyName("description")] 
+    [Required]
+    [JsonPropertyName("description")]
     public string Description { get; init; } = default!;
 
-    [Required] 
-    [JsonPropertyName("startDate")] 
-    public DateTime StartDate { get; init; }
+    [Required]
+    [JsonPropertyName("startDate")]
+    public DateTime StartDate { get; init; }   // obligatorio
 
-    [Required] 
-    [JsonPropertyName("endDate")] 
-    public DateTime EndDate { get; init; }
+    // OPCIONALES (como en el dbjson: pueden ser null)
+    [JsonPropertyName("propertyId")]
+    public int? PropertyId { get; init; }
 
-    // Constructor vacío (necesario para la deserialización de JSON)
-    public CreateProjectResource() { } 
+    [JsonPropertyName("endDate")]
+    public DateTime? EndDate { get; init; }
 
-    // Constructor completo para mapeo (opcional)
-    public CreateProjectResource(long propertyId, Guid userId, string name, string description, DateTime startDate, DateTime endDate)
+    // Constructor vacío para el binder (en realidad, el record ya lo soporta,
+    // pero si quieres dejarlo por claridad, no pasa nada)
+    public CreateProjectResource() { }
+
+    // Constructor completo (opcional). OJO: como PropertyId y EndDate son opcionales,
+    // mejor no obligarlos en este ctor; si no lo usas, puedes quitarlo.
+    public CreateProjectResource(
+        Guid userId,
+        string name,
+        string description,
+        DateTime startDate,
+        int? propertyId = null,
+        DateTime? endDate = null)
     {
-        PropertyId = propertyId;
         UserId = userId;
         Name = name;
         Description = description;
         StartDate = startDate;
+        PropertyId = propertyId;
         EndDate = endDate;
     }
 }

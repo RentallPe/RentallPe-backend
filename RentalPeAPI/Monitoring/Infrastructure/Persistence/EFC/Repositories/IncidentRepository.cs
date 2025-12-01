@@ -1,6 +1,8 @@
 ﻿// Monitoring/Infrastructure/Persistence/EFC/Repositories/IncidentRepository.cs
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
@@ -30,6 +32,7 @@ public class IncidentRepository : IIncidentRepository
     {
         return await _context.Incidents
             .Where(i => i.ProjectId == projectId)
+            .OrderByDescending(i => i.CreatedAt) // opcional: más recientes primero
             .ToListAsync();
     }
 }

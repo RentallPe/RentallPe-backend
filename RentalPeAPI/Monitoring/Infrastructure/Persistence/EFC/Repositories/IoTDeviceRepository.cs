@@ -1,11 +1,7 @@
-﻿// Monitoring/Infrastructure/Persistence/EFC/Repositories/IoTDeviceRepository.cs
-using Microsoft.EntityFrameworkCore;
-using RentalPeAPI.Monitoring.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using RentalPeAPI.Monitoring.Domain.Model.Aggregates;
 using RentalPeAPI.Monitoring.Domain.Repositories;
-using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 namespace RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 
@@ -23,12 +19,12 @@ public class IoTDeviceRepository : IIoTDeviceRepository
         await _context.IoTDevices.AddAsync(device);
     }
 
-    public async Task<IoTDevice?> FindByIdAsync(int id)
+    public async Task<IoTDevice?> FindByIdAsync(long id)
     {
         return await _context.IoTDevices.FindAsync(id);
     }
 
-    public async Task<IEnumerable<IoTDevice>> ListByProjectIdAsync(int projectId)
+    public async Task<IEnumerable<IoTDevice>> ListByProjectIdAsync(long projectId)
     {
         return await _context.IoTDevices
             .Where(d => d.ProjectId == projectId)

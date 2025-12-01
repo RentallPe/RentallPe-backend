@@ -1,10 +1,11 @@
 ﻿// Monitoring/Interfaces/REST/Controllers/IncidentsController.cs
+using System.Linq;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RentalPeAPI.Monitoring.Application.Internal.CommandServices;
 using RentalPeAPI.Monitoring.Domain.Repositories;
 using RentalPeAPI.Monitoring.Interfaces.REST.Resources;
-using System.Threading.Tasks;
 
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
@@ -22,14 +23,25 @@ public class IncidentsController : ControllerBase
     }
 
     /// <summary>
-    /// GET: Obtiene la lista de incidentes activos para un proyecto.
+    /// GET: Obtiene la lista de incidentes para un proyecto,
+    /// con el mismo shape que el "incidents" del db.json.
     /// </summary>
     [HttpGet("project/{projectId:int}")]
     public async Task<IActionResult> ListIncidents(int projectId)
     {
-        // Se asume que ListByProjectAsync ya trae el DTO o la entidad para mapear
         var incidents = await _incidentRepository.ListByProjectAsync(projectId);
-        return Ok(incidents); 
+
+        // Mapear entidad de dominio → resource/DTO para el front
+        var resources = incidents.Select(i => new IncidentResource(
+            i.Id,
+            i.ProjectId,
+            i.Description,
+            i.Status,
+            i.CreatedAt,
+            i.UpdatedAt
+        ));
+
+        return Ok(resources);
     }
 
     /// <summary>
@@ -38,13 +50,10 @@ public class IncidentsController : ControllerBase
     [HttpPatch("{id:int}/acknowledge")]
     public async Task<IActionResult> AcknowledgeIncident(int id, [FromBody] AcknowledgeIncidentResource resource)
     {
-        // Se asume que AcknowledgeIncidentResource solo tiene AcknowledgedByUserId
         var command = new AcknowledgeIncidentCommand(id, resource.AcknowledgedByUserId);
         var success = await _mediator.Send(command);
 
         if (!success) return NotFound();
         return NoContent(); // 204 No Content
     }
-    
-    
 }

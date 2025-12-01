@@ -16,7 +16,7 @@ public class TokenGenerationService : ITokenGenerationService
         _configuration = configuration;
     }
 
-    public string GenerateToken(AppUser user)
+    public string GenerateToken(Domain.User user)
     {
    
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]!));

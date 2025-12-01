@@ -7,7 +7,7 @@ using RentalPeAPI.Monitoring.Interfaces.REST.Resources;
 namespace RentalPeAPI.Monitoring.Interfaces.REST.Controllers;
 
 [ApiController]
-[Route("api/v1/monitoring/[controller]")] 
+[Route("api/v1/monitoring/[controller]")] // -> /api/v1/monitoring/tasks
 public class TasksController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -18,27 +18,34 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Crea una nueva orden de trabajo, usualmente en respuesta a un incidente.
+    /// Crea una nueva orden de trabajo (work item), usualmente en respuesta a un incidente.
     /// </summary>
     [HttpPost]
     public async Task<IActionResult> CreateTask([FromBody] CreateWorkItemResource resource)
     {
-        
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var command = new CreateWorkItemCommand(
             resource.ProjectId,
             resource.IncidentId,
             resource.AssignedToUserId,
             resource.Description
         );
-        
+
         var taskId = await _mediator.Send(command);
-        
-       
-        return CreatedAtAction(nameof(GetTaskById), new { id = taskId }, new { TaskId = taskId });
+
+        return CreatedAtAction(
+            nameof(GetTaskById),
+            new { id = taskId },
+            new { taskId } // el body de respuesta
+        );
     }
-    
-    
-    [HttpGet("{id}")]
+
+    /// <summary>
+    /// Solo endpoint de prueba: confirma que la tarea fue creada.
+    /// </summary>
+    [HttpGet("{id:int}")]
     public IActionResult GetTaskById(int id)
     {
         return Ok($"Tarea {id} creada y lista para ser consultada.");

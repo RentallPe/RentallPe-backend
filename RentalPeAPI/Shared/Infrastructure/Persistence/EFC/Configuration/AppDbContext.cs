@@ -1,7 +1,5 @@
-using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
-using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
 using RentalPeAPI.User.Domain; 
 using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; 
 using RentalPeAPI.Property.Domain.Aggregates; 
@@ -22,6 +20,7 @@ using RentalPeAPI.Property.Domain.Aggregates.Entities; // Para Service (De derec
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; // Para SpaceConfiguration (De derecha)
 // Para ApplyPaymentsConfiguration (De izquierda)
 using RentalPeAPI.Monitoring.Domain.Entities;
+using RentalPeAPI.Monitoring.Domain.Model.Aggregates;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
 
@@ -30,7 +29,6 @@ namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 /// <summary>
 /// Represents the application's database context using Entity Framework Core.
 /// </summary>
-/// <param name="options">The options for configuring the context.</param>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     // --- 3. ARREGLO: Añade el DbSet para tu BC ---
@@ -40,15 +38,18 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     // (Aquí se añadirán AppUser, Payment, etc.)
 
     // --- DBSETS COMBINADOS (USER, SPACE, SERVICE) ---
-    public DbSet<AppUser> Users { get; set; } // De izquierda
-    public DbSet<Space> Spaces { get; set; } // De derecha
-    public DbSet<Service> Services { get; set; } // De derecha (Asumo que Service es un DbSet)
+    public DbSet<User.Domain.User> Users { get; set; }              // De izquierda
+   
+
+    public DbSet<Space> Spaces { get; set; }               // De derecha
+    public DbSet<Service> Services { get; set; }           // De derecha
     public DbSet<IoTDevice> IoTDevices { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<Incident> Incidents { get; set; } // <--- ¡Añade esto!
     public DbSet<Reading> Readings { get; set; } // <--- ¡Añade esto!
     public DbSet<WorkItem> Tasks { get; set; } // <--- ¡Añade esto!
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<PaymentMethod> PaymentMethods { get; set; } = default!;
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -67,19 +68,20 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         // --- ESTRUCTURA BASE DE FRAMEWORK (Remote) ---
         // Publishing Context
       //builder.ApplyPublishingConfiguration();
-
-      //// Profiles Context
+      // Profiles Context
       //builder.ApplyProfilesConfiguration();
         
         // --- APLICACIÓN DE CONFIGURACIONES (Combinación de todos los BCs) ---
         
         // 1. User BC (Reglas de User)
         builder.ApplyConfiguration(new UserConfiguration()); 
+        builder.ApplyConfiguration(new PaymentMethodConfiguration());
+        // 🔗 Relación User (1) ─── (*) PaymentMethods
+        
         
         // 2. Payment BC (De izquierda)
         builder.ApplyPaymentsConfiguration();
         builder.ApplyProfilesConfiguration();
-        
         
         // 3. Space BC (De derecha)
         builder.ApplyConfiguration(new SpaceConfiguration());
@@ -100,5 +102,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Configuración compartida
         builder.UseSnakeCaseNamingConvention();
+
+       
+
+       
     }
 }

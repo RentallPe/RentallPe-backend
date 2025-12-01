@@ -4,5 +4,5 @@ namespace RentalPeAPI.User.Domain.Services;
 
 public interface ITokenGenerationService
 {
-    string GenerateToken(AppUser user);
+    string GenerateToken(User user);
 }

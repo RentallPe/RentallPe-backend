@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using RentalPeAPI.Payments.Domain.Model.Commands.Invoices;
 using RentalPeAPI.Payments.Domain.Model.Enums;
 using RentalPeAPI.Payments.Domain.Model.Queries.Invoices;
-using RentalPeAPI.Payments.Domain.Services;
-using RentalPeAPI.Payments.Interfaces.REST.Resources;
+using RentalPeAPI.Payments.Domain.Services.invoice;
+using RentalPeAPI.Payments.Interfaces.REST.Resources.invoices;
 using RentalPeAPI.Payments.Interfaces.REST.Transform;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -30,10 +30,16 @@ public class InvoicesController(
     }
 
     [HttpGet]
-    [SwaggerOperation(Summary = "Search invoices", Description = "Query by userId, paymentId or status", OperationId = "GetInvoicesFromQuery")]
+    [SwaggerOperation(
+        Summary = "Search invoices",
+        Description = "Query by userId, paymentId or status",
+        OperationId = "GetInvoicesFromQuery")]
     [SwaggerResponse(200, "Invoices found", typeof(IEnumerable<InvoiceResource>))]
     [SwaggerResponse(400, "Invalid request")]
-    public async Task<IActionResult> GetInvoicesFromQuery([FromQuery] int? userId, [FromQuery] int? paymentId, [FromQuery] InvoiceStatus? status)
+    public async Task<IActionResult> GetInvoicesFromQuery(
+        [FromQuery] int? userId,
+        [FromQuery] int? paymentId,
+        [FromQuery] InvoiceStatus? status)
     {
         if (paymentId.HasValue)
         {
@@ -63,9 +69,16 @@ public class InvoicesController(
     public async Task<IActionResult> CreateInvoice([FromBody] CreateInvoiceResource resource)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await invoiceCommandService.Handle(CreateInvoiceCommandFromResourceAssembler.ToCommandFromResource(resource));
+
+        var command = CreateInvoiceCommandFromResourceAssembler.ToCommandFromResource(resource);
+        var result = await invoiceCommandService.Handle(command);
+
         if (result is null) return BadRequest();
-        return CreatedAtAction(nameof(GetInvoiceById), new { id = result.Id }, InvoiceResourceFromEntityAssembler.ToResourceFromEntity(result));
+
+        return CreatedAtAction(
+            nameof(GetInvoiceById),
+            new { id = result.Id },
+            InvoiceResourceFromEntityAssembler.ToResourceFromEntity(result));
     }
 
     [HttpPost("{id:int}/issue")]

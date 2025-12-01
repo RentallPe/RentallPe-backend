@@ -2,16 +2,18 @@
 
 namespace RentalPeAPI.Payments.Domain.Model.ValueObjects;
 
-public sealed class Money
+public sealed record Money
 {
-    public decimal Amount { get; private set; }
-    public Currency Currency { get; private set; }
+    public decimal Amount { get; init; }
+    public Currency Currency { get; init; }
 
-    private Money() { } 
+    // Ctor vacío para EF
+    private Money() { }
 
     public Money(decimal amount, Currency currency)
     {
         if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be >= 0");
+
         Amount = decimal.Round(amount, 2, MidpointRounding.AwayFromZero);
         Currency = currency;
     }

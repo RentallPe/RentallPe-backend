@@ -56,6 +56,8 @@ using RentalPeAPI.Payments.Application.Internal.CommandServices;
 using RentalPeAPI.Payments.Application.Internal.QueryServices;
 using RentalPeAPI.Payments.Domain.Repositories;
 using RentalPeAPI.Payments.Domain.Services;
+using RentalPeAPI.Payments.Domain.Services.invoice;
+using RentalPeAPI.Payments.Domain.Services.payment;
 using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);

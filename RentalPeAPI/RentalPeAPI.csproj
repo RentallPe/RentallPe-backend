@@ -36,8 +36,6 @@
     <ItemGroup>
         <!-- Folders -->
         <Folder Include="Combo\Domain\Aggregates\Enums\" />
-
-        <Folder Include="Monitoring\Application\ACL\" />
         <Folder Include="Monitoring\Application\Internal\CommandServices\" />
         <Folder Include="Monitoring\Domain\Model\" />
         <Folder Include="Monitoring\Domain\Repositories\" />
@@ -47,17 +45,7 @@
         <Folder Include="Monitoring\Infrastructure\Persistence\EFC\Repositories\" />
         <Folder Include="Monitoring\Interfaces\ACL\" />
         <Folder Include="Monitoring\Interfaces\REST\Transform\" />
-        <Folder Include="Payments\Application\ACL\" />
-        <Folder Include="Payments\Application\Internal\CommandServices\" />
-        <Folder Include="Payments\Application\Internal\QueryServices\" />
-        <Folder Include="Payments\Domain\Repositories\" />
-        <Folder Include="Payments\Domain\Services\" />
-        <Folder Include="Payments\Infrastructure\Interfaces\ASP\Configuration\Extensions\" />
         <Folder Include="Payments\Infrastructure\Persistence\EFC\Configuration\Extensions\" />
-        <Folder Include="Payments\Infrastructure\Persistence\EFC\Repositories\" />
-        <Folder Include="Payments\Interfaces\ACL\" />
-        <Folder Include="Payments\Interfaces\REST\Resources\" />
-        <Folder Include="Payments\Interfaces\REST\Transform\" />
         <Folder Include="Profile\Application\ACL\" />
         <Folder Include="Profile\Application\Internal\CommandServices\" />
         <Folder Include="Profile\Application\Internal\QueryServices\" />

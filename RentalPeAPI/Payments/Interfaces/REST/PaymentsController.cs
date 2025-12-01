@@ -4,8 +4,8 @@ using Microsoft.Extensions.Localization;
 using RentalPeAPI.Payments.Domain.Model.Commands.payments;
 using RentalPeAPI.Payments.Domain.Model.Enums;
 using RentalPeAPI.Payments.Domain.Model.Queries.Payments;
-using RentalPeAPI.Payments.Domain.Services;
-using RentalPeAPI.Payments.Interfaces.REST.Resources;
+using RentalPeAPI.Payments.Domain.Services.payment;
+using RentalPeAPI.Payments.Interfaces.REST.Resources.payments;
 using RentalPeAPI.Payments.Interfaces.REST.Transform;
 using RentalPeAPI.Resources;
 using Swashbuckle.AspNetCore.Annotations;
@@ -21,7 +21,7 @@ public class PaymentsController(
     IPaymentQueryService queryService,
     IStringLocalizer<SharedResource> localizer) : ControllerBase
 {
-    [HttpGet("{id}:int")]
+    [HttpGet("{id:int}")]
     [SwaggerOperation(Summary = "Gets a payment by id", OperationId = "GetPaymentById")]
     [SwaggerResponse(200, "Payment found", typeof(PaymentResource))]
     [SwaggerResponse(404, "Payment not found")]
@@ -42,24 +42,29 @@ public class PaymentsController(
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var command = CreatePaymentCommandFromResourceAssembler.ToCommandFromResource(resource);
+
         try
         {
             var result = await commandService.Handle(command);
-            if (result is null) return Conflict(localizer["PaymentsReferenceDuplicated"].Value);
-            return CreatedAtAction(nameof(GetPaymentById), new { id = result.Id },
+            if (result is null)
+                return Conflict(localizer["PaymentsReferenceDuplicated"].Value);
+
+            return CreatedAtAction(
+                nameof(GetPaymentById),
+                new { id = result.Id },
                 PaymentResourceFromEntityAssembler.ToResourceFromEntity(result));
         }
         catch (Exception ex) when (ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
         {
             return Conflict(localizer["PaymentsReferenceDuplicated"].Value);
         }
-        catch (Exception)
+        catch
         {
             return BadRequest();
         }
     }
 
-    [HttpPost("{id}:int/initiate")]
+    [HttpPost("{id:int}/initiate")]
     [SwaggerOperation(Summary = "Initiates a payment", OperationId = "InitiatePayment")]
     [SwaggerResponse(200, "Payment initiated", typeof(PaymentResource))]
     [SwaggerResponse(400, "Invalid request")]
@@ -70,7 +75,7 @@ public class PaymentsController(
         return Ok(PaymentResourceFromEntityAssembler.ToResourceFromEntity(result));
     }
 
-    [HttpPost("{id}:int/confirm")]
+    [HttpPost("{id:int}/confirm")]
     [SwaggerOperation(Summary = "Confirms a payment", OperationId = "ConfirmPayment")]
     [SwaggerResponse(200, "Payment confirmed", typeof(PaymentResource))]
     [SwaggerResponse(400, "Invalid request")]
@@ -81,7 +86,7 @@ public class PaymentsController(
         return Ok(PaymentResourceFromEntityAssembler.ToResourceFromEntity(result));
     }
 
-    [HttpPost("{id}:int/cancel")]
+    [HttpPost("{id:int}/cancel")]
     [SwaggerOperation(Summary = "Cancels a payment", OperationId = "CancelPayment")]
     [SwaggerResponse(200, "Payment cancelled", typeof(PaymentResource))]
     [SwaggerResponse(400, "Invalid request")]
@@ -92,7 +97,7 @@ public class PaymentsController(
         return Ok(PaymentResourceFromEntityAssembler.ToResourceFromEntity(result));
     }
 
-    [HttpPost("{id}:int/refund")]
+    [HttpPost("{id:int}/refund")]
     [SwaggerOperation(Summary = "Refunds a payment", OperationId = "RefundPayment")]
     [SwaggerResponse(200, "Payment refunded", typeof(PaymentResource))]
     [SwaggerResponse(400, "Invalid request")]
@@ -101,27 +106,6 @@ public class PaymentsController(
         var result = await commandService.Handle(new RefundPaymentCommand(id));
         if (result is null) return BadRequest();
         return Ok(PaymentResourceFromEntityAssembler.ToResourceFromEntity(result));
-    }
-
-    private async Task<IActionResult> GetPaymentsByUserId(int userId)
-    {
-        var result = await queryService.Handle(new GetPaymentsByUserIdQuery(userId));
-        var resources = result.Select(PaymentResourceFromEntityAssembler.ToResourceFromEntity);
-        return Ok(resources);
-    }
-
-    private async Task<IActionResult> GetPaymentByReference(string reference)
-    {
-        var result = await queryService.Handle(new GetPaymentByReferenceQuery(reference));
-        if (result is null) return NotFound();
-        return Ok(PaymentResourceFromEntityAssembler.ToResourceFromEntity(result));
-    }
-
-    private async Task<IActionResult> GetPaymentsByStatus(PaymentStatus status, int? userId)
-    {
-        var result = await queryService.Handle(new GetPaymentsByStatusQuery(status, userId));
-        var resources = result.Select(PaymentResourceFromEntityAssembler.ToResourceFromEntity);
-        return Ok(resources);
     }
 
     [HttpGet]
@@ -145,8 +129,30 @@ public class PaymentsController(
         if (userId.HasValue)
             return await GetPaymentsByUserId(userId.Value);
 
+        // fallback, por ejemplo, todos los PENDING
         var all = await queryService.Handle(new GetPaymentsByStatusQuery(PaymentStatus.PENDING, null));
         var resources = all.Select(PaymentResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
+
+    private async Task<IActionResult> GetPaymentsByUserId(int userId)
+    {
+        var result = await queryService.Handle(new GetPaymentsByUserIdQuery(userId));
+        var resources = result.Select(PaymentResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
+
+    private async Task<IActionResult> GetPaymentByReference(string reference)
+    {
+        var result = await queryService.Handle(new GetPaymentByReferenceQuery(reference));
+        if (result is null) return NotFound();
+        return Ok(PaymentResourceFromEntityAssembler.ToResourceFromEntity(result));
+    }
+
+    private async Task<IActionResult> GetPaymentsByStatus(PaymentStatus status, int? userId)
+    {
+        var result = await queryService.Handle(new GetPaymentsByStatusQuery(status, userId));
+        var resources = result.Select(PaymentResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
     }
 }

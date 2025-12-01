@@ -7,15 +7,20 @@ using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 namespace RentalPeAPI.Payments.Infrastructure.Persistence.EFC.Repositories;
 
-public class InvoiceRepository(AppDbContext context)
-    : BaseRepository<Invoice>(context), IInvoiceRepository
+public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
 {
-    private IInvoiceRepository _invoiceRepositoryImplementation;
+    public InvoiceRepository(AppDbContext context) : base(context) { }
 
     public async Task<IEnumerable<Invoice>> FindByUserIdAsync(int userId)
     {
         return await Context.Set<Invoice>()
-            .Where(i => i.UserId == userId)
+            .Join(
+                Context.Set<Payment>(),
+                invoice => invoice.PaymentId,
+                payment => payment.Id,
+                (invoice, payment) => new { invoice, payment })
+            .Where(x => x.payment.UserId == userId)
+            .Select(x => x.invoice)
             .ToListAsync();
     }
 

@@ -2,7 +2,7 @@
 
 public enum InvoiceStatus
 {
-    DRAFT = 1,
+    DRAFT  = 1,
     ISSUED = 2,
-    VOID = 3
+    VOID   = 3
 }

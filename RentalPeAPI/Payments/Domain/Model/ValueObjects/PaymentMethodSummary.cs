@@ -2,13 +2,14 @@
 
 namespace RentalPeAPI.Payments.Domain.Model.ValueObjects;
 
-public sealed class PaymentMethodSummary
+public sealed record PaymentMethodSummary
 {
-    public PaymentMethodType Type { get; private set; }
-    public string? Label { get; private set; }
-    public string? Last4 { get; private set; }
+    public PaymentMethodType Type { get; init; }
+    public string? Label { get; init; }
+    public string? Last4 { get; init; }
 
-    private PaymentMethodSummary() { } // EF
+    // EF
+    private PaymentMethodSummary() { }
 
     public PaymentMethodSummary(PaymentMethodType type, string? label = null, string? last4 = null)
     {

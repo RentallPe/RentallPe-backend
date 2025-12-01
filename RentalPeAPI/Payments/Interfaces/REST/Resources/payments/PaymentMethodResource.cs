@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using RentalPeAPI.Payments.Domain.Model.Enums;
 
-namespace RentalPeAPI.Payments.Interfaces.REST.Resources;
+namespace RentalPeAPI.Payments.Interfaces.REST.Resources.payments;
+
 
 public record PaymentMethodResource(
     [Required] PaymentMethodType Type,

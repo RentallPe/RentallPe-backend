@@ -1,7 +1,7 @@
 ﻿using RentalPeAPI.Payments.Domain.Model.Aggregates;
 using RentalPeAPI.Payments.Domain.Model.Commands.Invoices;
 using RentalPeAPI.Payments.Domain.Repositories;
-using RentalPeAPI.Payments.Domain.Services;
+using RentalPeAPI.Payments.Domain.Services.invoice;
 using RentalPeAPI.Shared.Domain.Repositories;
 
 namespace RentalPeAPI.Payments.Application.Internal.CommandServices;
@@ -13,14 +13,19 @@ public class InvoiceCommandService(
 {
     public async Task<Invoice?> Handle(CreateInvoiceCommand command)
     {
+        // Validar que exista el Payment
         var payment = await paymentRepository.FindByIdAsync(command.PaymentId);
         if (payment is null) return null;
 
-       
+        // Asegurar 1 Invoice por Payment
         var existing = (await invoiceRepository.FindByPaymentIdAsync(command.PaymentId)).FirstOrDefault();
         if (existing is not null) return null;
 
-        var invoice = new Invoice(command.PaymentId, command.BookingId, command.UserId, command.Total);
+        var invoice = new Invoice(
+            paymentId: command.PaymentId,
+            number: command.Number,
+            issueDate: command.IssueDate
+        );
 
         try
         {

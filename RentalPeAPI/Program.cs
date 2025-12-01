@@ -4,11 +4,11 @@ using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using RentalPeAPI.Shared.Domain.Repositories;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using RentalPeAPI.Payment.Application.Internal.CommandServices;
-using RentalPeAPI.Payment.Application.Internal.QueryServices;
-using RentalPeAPI.Payment.Domain.Repositories;
-using RentalPeAPI.Payment.Domain.Services;
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.Repositories;
+using RentalPeAPI.Payments.Application.Internal.CommandServices;
+using RentalPeAPI.Payments.Application.Internal.QueryServices;
+using RentalPeAPI.Payments.Domain.Repositories;
+using RentalPeAPI.Payments.Domain.Services;
+using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 

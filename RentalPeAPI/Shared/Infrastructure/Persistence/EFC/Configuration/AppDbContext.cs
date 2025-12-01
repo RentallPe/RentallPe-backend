@@ -1,7 +1,7 @@
 using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 

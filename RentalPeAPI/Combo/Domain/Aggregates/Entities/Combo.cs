@@ -17,6 +17,8 @@ public class Combo
     public string Image { get; private set; } = string.Empty;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public string PlanType { get; private set; } = "basic";
+
 
     protected Combo() { }
 

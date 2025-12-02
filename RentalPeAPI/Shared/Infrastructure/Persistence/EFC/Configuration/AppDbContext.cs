@@ -27,6 +27,8 @@ using RentalPeAPI.Monitoring.Domain.Model.Aggregates;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Profiles.Infrastructure.Persistence.EFC.configuration.extensions;
 using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.providers.Domain.Model.Aggregates;
+using RentalPeAPI.Providers.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.subscriptions.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
@@ -55,6 +57,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<WorkItem> Tasks { get; set; } // <--- ¡Añade esto!
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<PaymentMethod> PaymentMethods { get; set; } = default!;
+    public DbSet<Provider> Providers { get; set; } = default!;
+
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -101,6 +105,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.ApplyConfiguration(new NotificationConfiguration());
         
         builder.ApplySubscriptionsConfiguration();
+        
+        builder.ApplyConfiguration(new ProviderConfiguration());
+
 
         // Configuración de Combo
         builder.ApplyConfiguration(new ComboConfiguration());

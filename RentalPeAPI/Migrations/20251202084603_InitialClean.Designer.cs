@@ -12,15 +12,15 @@ using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 namespace RentalPeAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251115051034_InitialAppDbContext")]
-    partial class InitialAppDbContext
+    [Migration("20251202084603_InitialClean")]
+    partial class InitialClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("ProductVersion", "9.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -62,12 +62,17 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("varchar(120)")
                         .HasColumnName("name");
 
+                    b.Property<string>("PlanType")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("plan_type");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("price");
 
-                    b.Property<int>("ProviderId")
-                        .HasColumnType("int")
+                    b.Property<Guid>("ProviderId")
+                        .HasColumnType("char(36)")
                         .HasColumnName("provider_id");
 
                     b.HasKey("Id")
@@ -92,6 +97,10 @@ namespace RentalPeAPI.Migrations
                     b.Property<Guid?>("AcknowledgedByUserId")
                         .HasColumnType("char(36)")
                         .HasColumnName("acknowledged_by_user_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -127,6 +136,10 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("status");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
                     b.HasKey("Id")
                         .HasName("p_k_incidents");
 
@@ -139,60 +152,6 @@ namespace RentalPeAPI.Migrations
                     b.ToTable("incidents", (string)null);
                 });
 
-            modelBuilder.Entity("RentalPeAPI.Monitoring.Domain.Entities.IoTDevice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("InstallationDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("installation_date");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int")
-                        .HasColumnName("project_id");
-
-                    b.Property<string>("SerialNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("serial_number");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("status");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("type");
-
-                    b.HasKey("Id")
-                        .HasName("p_k_iot_devices");
-
-                    b.HasIndex("ProjectId")
-                        .HasDatabaseName("i_x_iot_devices_project_id");
-
-                    b.HasIndex("SerialNumber")
-                        .IsUnique()
-                        .HasDatabaseName("i_x_iot_devices_serial_number");
-
-                    b.ToTable("iot_devices", (string)null);
-                });
-
             modelBuilder.Entity("RentalPeAPI.Monitoring.Domain.Entities.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -202,7 +161,11 @@ namespace RentalPeAPI.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("IncidentId")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<int?>("IncidentId")
                         .HasColumnType("int")
                         .HasColumnName("incident_id");
 
@@ -217,12 +180,11 @@ namespace RentalPeAPI.Migrations
                         .HasColumnName("project_id");
 
                     b.Property<string>("Recipient")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)")
                         .HasColumnName("recipient");
 
-                    b.Property<DateTime>("SentAt")
+                    b.Property<DateTime?>("SentAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("sent_at");
 
@@ -238,6 +200,10 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("type");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
                         .HasName("p_k_notifications");
 
@@ -246,6 +212,9 @@ namespace RentalPeAPI.Migrations
 
                     b.HasIndex("ProjectId")
                         .HasDatabaseName("i_x_notifications_project_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("i_x_notifications_user_id");
 
                     b.ToTable("notifications", (string)null);
                 });
@@ -269,7 +238,7 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("description");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("end_date");
 
@@ -279,8 +248,8 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
 
-                    b.Property<long>("PropertyId")
-                        .HasColumnType("bigint")
+                    b.Property<int?>("PropertyId")
+                        .HasColumnType("int")
                         .HasColumnName("property_id");
 
                     b.Property<DateTime>("StartDate")
@@ -301,7 +270,6 @@ namespace RentalPeAPI.Migrations
                         .HasName("p_k_projects");
 
                     b.HasIndex("PropertyId")
-                        .IsUnique()
                         .HasDatabaseName("i_x_projects_property_id");
 
                     b.HasIndex("UserId")
@@ -352,6 +320,9 @@ namespace RentalPeAPI.Migrations
 
                     b.HasIndex("IoTDeviceId")
                         .HasDatabaseName("i_x_readings_iot_device_id");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("i_x_readings_project_id");
 
                     b.HasIndex("Timestamp")
                         .HasDatabaseName("i_x_readings_timestamp");
@@ -415,7 +386,56 @@ namespace RentalPeAPI.Migrations
                     b.ToTable("tasks", (string)null);
                 });
 
-            modelBuilder.Entity("RentalPeAPI.Payment.Domain.Model.Aggregates.Invoice", b =>
+            modelBuilder.Entity("RentalPeAPI.Monitoring.Domain.Model.Aggregates.IoTDevice", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("InstalledAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("installation_date");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("name");
+
+                    b.Property<long>("ProjectId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("project_id");
+
+                    b.Property<string>("SerialNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("serial_number");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_iot_devices");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("i_x_iot_devices_project_id");
+
+                    b.ToTable("iot_devices", (string)null);
+                });
+
+            modelBuilder.Entity("RentalPeAPI.Payments.Domain.Model.Aggregates.Invoice", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -424,10 +444,6 @@ namespace RentalPeAPI.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookingId")
-                        .HasColumnType("int")
-                        .HasColumnName("booking_id");
-
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created_at");
@@ -435,6 +451,12 @@ namespace RentalPeAPI.Migrations
                     b.Property<DateTimeOffset>("IssueDate")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("issue_date");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("number");
 
                     b.Property<int>("PaymentId")
                         .HasColumnType("int")
@@ -448,10 +470,6 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("updated_at");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id")
                         .HasName("p_k_invoices");
 
@@ -459,13 +477,10 @@ namespace RentalPeAPI.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_invoices_payment_id");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("i_x_invoices_user_id");
-
                     b.ToTable("invoices");
                 });
 
-            modelBuilder.Entity("RentalPeAPI.Payment.Domain.Model.Aggregates.Payment", b =>
+            modelBuilder.Entity("RentalPeAPI.Payments.Domain.Model.Aggregates.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -477,6 +492,18 @@ namespace RentalPeAPI.Migrations
                     b.Property<DateTimeOffset?>("CreatedDate")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("date");
+
+                    b.Property<int>("Installment")
+                        .HasColumnType("int")
+                        .HasColumnName("installment");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
 
                     b.Property<string>("Reference")
                         .HasMaxLength(100)
@@ -498,6 +525,9 @@ namespace RentalPeAPI.Migrations
                     b.HasKey("Id")
                         .HasName("p_k_payments");
 
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("i_x_payments_project_id");
+
                     b.HasIndex("Reference")
                         .HasDatabaseName("i_x_payments_reference");
 
@@ -507,7 +537,49 @@ namespace RentalPeAPI.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("i_x_payments_user_id");
 
+                    b.HasIndex("ProjectId", "Installment")
+                        .HasDatabaseName("i_x_payments_project_id_installment");
+
                     b.ToTable("payments");
+                });
+
+            modelBuilder.Entity("RentalPeAPI.Profiles.Domain.Model.Aggregates.Profile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("password");
+
+                    b.Property<string>("Photo")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)")
+                        .HasColumnName("photo");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("role");
+
+                    b.Property<DateTimeOffset?>("UpdatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_profiles");
+
+                    b.ToTable("profiles");
                 });
 
             modelBuilder.Entity("RentalPeAPI.Property.Domain.Aggregates.Entities.Service", b =>
@@ -586,12 +658,60 @@ namespace RentalPeAPI.Migrations
                     b.ToTable("spaces", (string)null);
                 });
 
-            modelBuilder.Entity("RentalPeAPI.User.Domain.AppUser", b =>
+            modelBuilder.Entity("RentalPeAPI.User.Domain.PaymentMethod", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)")
                         .HasColumnName("id");
+
+                    b.Property<string>("Cvv")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("cvv");
+
+                    b.Property<string>("Expiry")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("expiry");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("number");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("type");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_user_payment_methods");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("i_x_user_payment_methods_user_id");
+
+                    b.ToTable("user_payment_methods", (string)null);
+                });
+
+            modelBuilder.Entity("RentalPeAPI.User.Domain.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -610,6 +730,26 @@ namespace RentalPeAPI.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("password_hash");
 
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("phone");
+
+                    b.Property<string>("Photo")
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("photo");
+
+                    b.Property<Guid?>("ProviderId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("provider_id");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("role");
+
                     b.HasKey("Id")
                         .HasName("p_k_users");
 
@@ -620,47 +760,87 @@ namespace RentalPeAPI.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("RentalPeAPI.Payment.Domain.Model.Aggregates.Invoice", b =>
+            modelBuilder.Entity("RentalPeAPI.providers.Domain.Model.Aggregates.Provider", b =>
                 {
-                    b.HasOne("RentalPeAPI.Payment.Domain.Model.Aggregates.Payment", null)
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("contact_email");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_providers");
+
+                    b.ToTable("providers", (string)null);
+                });
+
+            modelBuilder.Entity("RentalPeAPI.subscriptions.Domain.Model.Aggregates.Subscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("CreatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int")
+                        .HasColumnName("customer_id");
+
+                    b.Property<int>("Plan")
+                        .HasColumnType("int")
+                        .HasColumnName("plan");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_subscriptions");
+
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("i_x_subscriptions_customer_id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("i_x_subscriptions_status");
+
+                    b.ToTable("subscriptions");
+                });
+
+            modelBuilder.Entity("RentalPeAPI.Payments.Domain.Model.Aggregates.Invoice", b =>
+                {
+                    b.HasOne("RentalPeAPI.Payments.Domain.Model.Aggregates.Payment", null)
                         .WithOne()
-                        .HasForeignKey("RentalPeAPI.Payment.Domain.Model.Aggregates.Invoice", "PaymentId")
+                        .HasForeignKey("RentalPeAPI.Payments.Domain.Model.Aggregates.Invoice", "PaymentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("f_k_invoices__payment_payment_id");
-
-                    b.OwnsOne("RentalPeAPI.Payment.Domain.Model.ValueObjects.Money", "Total", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .HasColumnType("int")
-                                .HasColumnName("id");
-
-                            b1.Property<decimal>("Amount")
-                                .HasPrecision(18, 2)
-                                .HasColumnType("decimal(18,2)")
-                                .HasColumnName("amount");
-
-                            b1.Property<int>("Currency")
-                                .HasColumnType("int")
-                                .HasColumnName("currency");
-
-                            b1.HasKey("Id")
-                                .HasName("p_k_invoices");
-
-                            b1.ToTable("invoices");
-
-                            b1.WithOwner()
-                                .HasForeignKey("Id")
-                                .HasConstraintName("f_k_invoices_invoices_id");
-                        });
-
-                    b.Navigation("Total")
-                        .IsRequired();
                 });
 
-            modelBuilder.Entity("RentalPeAPI.Payment.Domain.Model.Aggregates.Payment", b =>
+            modelBuilder.Entity("RentalPeAPI.Payments.Domain.Model.Aggregates.Payment", b =>
                 {
-                    b.OwnsOne("RentalPeAPI.Payment.Domain.Model.ValueObjects.Money", "Money", b1 =>
+                    b.OwnsOne("RentalPeAPI.Payments.Domain.Model.ValueObjects.Money", "Money", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .HasColumnType("int")
@@ -685,7 +865,7 @@ namespace RentalPeAPI.Migrations
                                 .HasConstraintName("f_k_payments_payments_id");
                         });
 
-                    b.OwnsOne("RentalPeAPI.Payment.Domain.Model.ValueObjects.PaymentMethodSummary", "Method", b1 =>
+                    b.OwnsOne("RentalPeAPI.Payments.Domain.Model.ValueObjects.PaymentMethodSummary", "Method", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .HasColumnType("int")
@@ -719,6 +899,138 @@ namespace RentalPeAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Money")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RentalPeAPI.Profiles.Domain.Model.Aggregates.Profile", b =>
+                {
+                    b.OwnsOne("RentalPeAPI.Profiles.Domain.Model.ValueObjects.EmailAddress", "Email", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .HasColumnType("int")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasColumnName("email");
+
+                            b1.HasKey("Id")
+                                .HasName("p_k_profiles");
+
+                            b1.ToTable("profiles");
+
+                            b1.WithOwner()
+                                .HasForeignKey("Id")
+                                .HasConstraintName("f_k_profiles_profiles_id");
+                        });
+
+                    b.OwnsOne("RentalPeAPI.Profiles.Domain.Model.ValueObjects.PersonName", "Name", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .HasColumnType("int")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("FirstName")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasColumnName("first_name");
+
+                            b1.Property<string>("LastName")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasColumnName("last_name");
+
+                            b1.HasKey("Id")
+                                .HasName("p_k_profiles");
+
+                            b1.ToTable("profiles");
+
+                            b1.WithOwner()
+                                .HasForeignKey("Id")
+                                .HasConstraintName("f_k_profiles_profiles_id");
+                        });
+
+                    b.OwnsOne("RentalPeAPI.Profiles.Domain.Model.ValueObjects.PhoneNumber", "Phone", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .HasColumnType("int")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("longtext")
+                                .HasColumnName("phone");
+
+                            b1.HasKey("Id")
+                                .HasName("p_k_profiles");
+
+                            b1.ToTable("profiles");
+
+                            b1.WithOwner()
+                                .HasForeignKey("Id")
+                                .HasConstraintName("f_k_profiles_profiles_id");
+                        });
+
+                    b.OwnsMany("RentalPeAPI.Profiles.Domain.Model.Aggregates.PaymentMethod", "PaymentMethods", b1 =>
+                        {
+                            b1.Property<long>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
+
+                            MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b1.Property<long>("Id"));
+
+                            b1.Property<string>("Cvv")
+                                .IsRequired()
+                                .HasMaxLength(8)
+                                .HasColumnType("varchar(8)")
+                                .HasColumnName("cvv");
+
+                            b1.Property<string>("Expiry")
+                                .IsRequired()
+                                .HasMaxLength(8)
+                                .HasColumnType("varchar(8)")
+                                .HasColumnName("expiry");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasMaxLength(32)
+                                .HasColumnType("varchar(32)")
+                                .HasColumnName("number");
+
+                            b1.Property<string>("Type")
+                                .IsRequired()
+                                .HasMaxLength(64)
+                                .HasColumnType("varchar(64)")
+                                .HasColumnName("type");
+
+                            b1.Property<int>("profile_id")
+                                .HasColumnType("int")
+                                .HasColumnName("profile_id");
+
+                            b1.HasKey("Id")
+                                .HasName("p_k_payment_methods");
+
+                            b1.HasIndex("profile_id")
+                                .HasDatabaseName("i_x_payment_methods_profile_id");
+
+                            b1.ToTable("payment_methods", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("profile_id")
+                                .HasConstraintName("f_k_payment_methods__profile_profile_id");
+                        });
+
+                    b.Navigation("Email")
+                        .IsRequired();
+
+                    b.Navigation("Name")
+                        .IsRequired();
+
+                    b.Navigation("PaymentMethods");
+
+                    b.Navigation("Phone")
                         .IsRequired();
                 });
 
@@ -785,9 +1097,80 @@ namespace RentalPeAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RentalPeAPI.User.Domain.PaymentMethod", b =>
+                {
+                    b.HasOne("RentalPeAPI.User.Domain.User", "User")
+                        .WithMany("PaymentMethods")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("f_k_user_payment_methods__users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RentalPeAPI.subscriptions.Domain.Model.Aggregates.Subscription", b =>
+                {
+                    b.OwnsOne("RentalPeAPI.subscriptions.Domain.Model.ValueObjects.SubscriptionPeriod", "Period", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .HasColumnType("int")
+                                .HasColumnName("id");
+
+                            b1.Property<DateTimeOffset>("EndDate")
+                                .HasColumnType("datetime(6)")
+                                .HasColumnName("end_date");
+
+                            b1.Property<DateTimeOffset>("StartDate")
+                                .HasColumnType("datetime(6)")
+                                .HasColumnName("start_date");
+
+                            b1.HasKey("Id")
+                                .HasName("p_k_subscriptions");
+
+                            b1.ToTable("subscriptions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("Id")
+                                .HasConstraintName("f_k_subscriptions_subscriptions_id");
+                        });
+
+                    b.OwnsOne("RentalPeAPI.subscriptions.Domain.Model.ValueObjects.SubscriptionPrice", "Price", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .HasColumnType("int")
+                                .HasColumnName("id");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("price_amount");
+
+                            b1.HasKey("Id")
+                                .HasName("p_k_subscriptions");
+
+                            b1.ToTable("subscriptions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("Id")
+                                .HasConstraintName("f_k_subscriptions_subscriptions_id");
+                        });
+
+                    b.Navigation("Period")
+                        .IsRequired();
+
+                    b.Navigation("Price")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RentalPeAPI.Property.Domain.Aggregates.Space", b =>
                 {
                     b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("RentalPeAPI.User.Domain.User", b =>
+                {
+                    b.Navigation("PaymentMethods");
                 });
 #pragma warning restore 612, 618
         }

@@ -59,6 +59,14 @@ using RentalPeAPI.subscriptions.Domain.Services;
 using RentalPeAPI.subscriptions.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.subscriptions.Interfaces.ACL;
 
+// Providers BC
+using RentalPeAPI.Providers.Application.ACL;
+using RentalPeAPI.Providers.Application.Internal.CommandServices;
+using RentalPeAPI.providers.Domain.Repositories;
+using RentalPeAPI.providers.Domain.Services;
+using RentalPeAPI.providers.Infrastructure.Persistence.EFC.Repositories;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC + localization
@@ -172,6 +180,12 @@ builder.Services.AddScoped<IIoTDeviceRepository,    IoTDeviceRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IAnomalyDetectorService, AnomalyDetectorService>();
 builder.Services.AddScoped<INotificationService,    NotificationService>();
+
+// Providers
+builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
+builder.Services.AddScoped<IProviderCommandService, ProviderCommandService>();
+builder.Services.AddScoped<IProviderQueryService, ProviderQueryService>();
+builder.Services.AddScoped<ProvidersContextFacade>();
 
 // Kestrel: solo HTTP para evitar warning de certificado y mixed content
 //builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(52888));

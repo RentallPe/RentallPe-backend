@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 // Shared
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;           // AppDbContext
@@ -9,6 +10,9 @@ using RentalPeAPI.Shared.Infrastructure.Interfaces.ASP.Configuration;           
 using IUnitOfWork = RentalPeAPI.Shared.Domain.Repositories.IUnitOfWork;
 using UnitOfWork = RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories.UnitOfWork;
 
+// Monitoring ACL
+using RentalPeAPI.Monitoring.Application.ACL;
+
 // Combo BC
 using RentalPeAPI.Combo.Application.Internal.CommandServices;
 using RentalPeAPI.Combo.Application.Internal.QueryServices;
@@ -16,10 +20,10 @@ using RentalPeAPI.Combo.Domain.Repositories;
 using RentalPeAPI.Combo.Infrastructure.Persistence.EFC.Repositories;
 
 // Payment BC
-using RentalPeAPI.Payment.Domain.Repositories;
-using RentalPeAPI.Payment.Domain.Services;
 using RentalPeAPI.Payment.Application.Internal.CommandServices;
 using RentalPeAPI.Payment.Application.Internal.QueryServices;
+using RentalPeAPI.Payment.Domain.Repositories;
+using RentalPeAPI.Payment.Domain.Services;
 using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.Repositories;
 
 // User BC
@@ -34,46 +38,52 @@ using RentalPeAPI.Property.Application.Services;
 using RentalPeAPI.Property.Domain.Repositories;
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Repositories;
 
-// Profile BC
-using RentalPeAPI.Profile.Domain.Repositories;
-using RentalPeAPI.Profile.Domain.Services;
-using RentalPeAPI.Profile.Application.Internal.CommandServices;
-using RentalPeAPI.Profile.Application.Internal.QueryServices;
-using RentalPeAPI.Profile.Infrastructure.Persistence.EFC.Repositories;
+// Profiles BC
+using RentalPeAPI.Profiles.Application.Internal.CommandServices;
+using RentalPeAPI.Profiles.Application.Internal.QueryServices;
+using RentalPeAPI.Profiles.Domain.Repositories;
+using RentalPeAPI.Profiles.Domain.Services;
+using RentalPeAPI.Profiles.Infrastructure.Persistence.EFC.Repositories;
 
 // Monitoring BC
 using RentalPeAPI.Monitoring.Domain.Repositories;
+using RentalPeAPI.Monitoring.Domain.Services;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Repositories;
 using RentalPeAPI.Monitoring.Infrastructure.Services;
-using RentalPeAPI.Monitoring.Domain.Services;
-using RentalPeAPI.Monitoring.Application.ACL;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// MVC + localization
+// Localization + MVC + rutas kebab-case
 builder.Services.AddLocalization();
 builder.Services.AddControllers(o => o.Conventions.Add(new KebabCaseRouteNamingConvention()))
     .AddDataAnnotationsLocalization();
 
 // Swagger (solo Swashbuckle)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(o => o.EnableAnnotations());
-builder.Services.AddScoped<MonitoringContextFacade>();
-// DbContext (Pomelo unificado)
-// El constructor de AppDbContext debe aceptar DbContextOptions<AppDbContext>
-// No necesita parámetros adicionales.
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.CustomSchemaIds(type =>
+        type.FullName!
+            .Replace("RentalPeAPI.", string.Empty)
+            .Replace("+", ".")
+            .Replace(".", "_"));
+});
 
-// Función para añadir DbContext, simplificando la lógica
+// Monitoring ACL
+builder.Services.AddScoped<MonitoringContextFacade>();
+
+// --- CONFIGURACIÓN DE BASE DE DATOS ---
 void AddMySqlDbContext(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
 {
     var cs = configuration.GetConnectionString("DefaultConnection")
-             ?? throw new Exception($"Database connection string 'DefaultConnection' not found in {environment.EnvironmentName}.");
+             ?? throw new Exception(
+                 $"Database connection string 'DefaultConnection' not found in {environment.EnvironmentName}.");
 
     services.AddDbContext<AppDbContext>(options =>
     {
-        // Usamos la sobrecarga que permite pasar opciones de MySQL
         options.UseMySql(cs, ServerVersion.AutoDetect(cs), mySqlOptions =>
         {
-            // Opcional: Esto ayuda a que la aplicación no se caiga por fallas temporales
             mySqlOptions.EnableRetryOnFailure(
                 maxRetryCount: 5,
                 maxRetryDelay: TimeSpan.FromSeconds(10),
@@ -86,7 +96,7 @@ void AddMySqlDbContext(IServiceCollection services, IConfiguration configuration
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
         }
-        else // Producción
+        else
         {
             options.LogTo(Console.WriteLine, LogLevel.Error)
                 .EnableDetailedErrors();
@@ -94,26 +104,25 @@ void AddMySqlDbContext(IServiceCollection services, IConfiguration configuration
     });
 }
 
-// Llama a la función de configuración
 AddMySqlDbContext(builder.Services, builder.Configuration, builder.Environment);
 
 // DI compartido
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// MediatR (ensambla handlers de varios BC)
+// MediatR (handlers de varios BC)
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly);     // User
-    cfg.RegisterServicesFromAssembly(typeof(ComboCommandService).Assembly);     // Combo
-    cfg.RegisterServicesFromAssembly(typeof(PaymentCommandService).Assembly);   // Payment
-    cfg.RegisterServicesFromAssembly(typeof(ProfileCommandService).Assembly);   // Profile
+    cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly);   // User
+    cfg.RegisterServicesFromAssembly(typeof(ComboCommandService).Assembly);   // Combo
+    cfg.RegisterServicesFromAssembly(typeof(PaymentCommandService).Assembly); // Payment
+    cfg.RegisterServicesFromAssembly(typeof(ProfileCommandService).Assembly); // Profiles
 });
 
 // User
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddSingleton<ITokenGenerationService,   TokenGenerationService>();
-builder.Services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
+builder.Services.AddScoped<IPaymentMethodRepository,     PaymentMethodRepository>();
 
 // Combo
 builder.Services.AddScoped<IComboRepository, ComboRepository>();
@@ -121,8 +130,8 @@ builder.Services.AddScoped<ComboCommandService>();
 builder.Services.AddScoped<ComboQueryService>();
 
 // Payment
-builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
-builder.Services.AddScoped<IInvoiceRepository,  InvoiceRepository>();
+builder.Services.AddScoped<IPaymentRepository,      PaymentRepository>();
+builder.Services.AddScoped<IInvoiceRepository,      InvoiceRepository>();
 builder.Services.AddScoped<IPaymentCommandService,  PaymentCommandService>();
 builder.Services.AddScoped<IPaymentQueryService,    PaymentQueryService>();
 builder.Services.AddScoped<IInvoiceCommandService,  InvoiceCommandService>();
@@ -132,13 +141,10 @@ builder.Services.AddScoped<IInvoiceQueryService,    InvoiceQueryService>();
 builder.Services.AddScoped<SpaceAppService>();
 builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 
-// Profile
+// Profiles
 builder.Services.AddScoped<IProfileRepository,       ProfileRepository>();
-builder.Services.AddScoped<IPreferenceSetRepository, PreferenceSetRepository>();
 builder.Services.AddScoped<IProfileCommandService,       ProfileCommandService>();
 builder.Services.AddScoped<IProfileQueryService,         ProfileQueryService>();
-builder.Services.AddScoped<IPreferenceSetCommandService, PreferenceSetCommandService>();
-builder.Services.AddScoped<IPreferenceSetQueryService,   PreferenceSetQueryService>();
 
 // Monitoring
 builder.Services.AddScoped<IReadingRepository,      ReadingRepository>();
@@ -150,24 +156,24 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IAnomalyDetectorService, AnomalyDetectorService>();
 builder.Services.AddScoped<INotificationService,    NotificationService>();
 
-// Kestrel: solo HTTP para evitar warning de certificado y mixed content
-//builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(52888));
+// Kestrel solo HTTP (opcional)
+// builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(52888));
 
 var app = builder.Build();
 
-// EnsureCreated
+// --- EJECUCIÓN DE BASE DE DATOS ---
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 }
 
-// Swagger
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+// Swagger solo en Development
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "RentalPe API v1");
-});
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // Localization
 var cultures = new[] { "en", "en-US", "es", "es-PE" };
@@ -177,12 +183,16 @@ var loc = new RequestLocalizationOptions()
     .AddSupportedUICultures(cultures);
 loc.ApplyCurrentCultureToResponseHeaders = true;
 app.UseRequestLocalization(loc);
-app.MapGet("/", context => {
+
+// Redirección raíz a Swagger
+app.MapGet("/", context =>
+{
     context.Response.Redirect("/swagger", permanent: true);
     return Task.CompletedTask;
 });
+
 // Pipeline
-// app.UseHttpsRedirection(); // deshabilitado: solo HTTP
+// app.UseHttpsRedirection(); // si solo usas HTTP, lo dejas comentado
 app.UseAuthorization();
 app.MapControllers();
 

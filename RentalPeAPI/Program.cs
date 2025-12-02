@@ -200,11 +200,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Swagger solo en Development
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "RentalPe API v1"); 
+});
 
 // Localization
 var cultures = new[] { "en", "en-US", "es", "es-PE" };

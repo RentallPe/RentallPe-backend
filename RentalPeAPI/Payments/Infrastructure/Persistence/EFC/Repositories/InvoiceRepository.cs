@@ -1,9 +1,9 @@
-﻿using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Payments.Domain.Model.Aggregates;
 using RentalPeAPI.Payments.Domain.Model.Enums;
 using RentalPeAPI.Payments.Domain.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 namespace RentalPeAPI.Payments.Infrastructure.Persistence.EFC.Repositories;
 

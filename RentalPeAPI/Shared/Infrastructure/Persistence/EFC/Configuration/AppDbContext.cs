@@ -27,6 +27,7 @@ using RentalPeAPI.Monitoring.Domain.Model.Aggregates;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Profiles.Infrastructure.Persistence.EFC.configuration.extensions;
 using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.subscriptions.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
@@ -98,6 +99,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.ApplyConfiguration(new WorkItemConfiguration());
         builder.ApplyConfiguration(new IncidentConfiguration());
         builder.ApplyConfiguration(new NotificationConfiguration());
+        
+        builder.ApplySubscriptionsConfiguration();
 
         // Configuración de Combo
         builder.ApplyConfiguration(new ComboConfiguration());

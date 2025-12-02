@@ -1,9 +1,8 @@
-using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Shared.Domain.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
 
-namespace ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 /// <summary>
 /// Base implementation of the repository pattern for entities using Entity Framework Core.

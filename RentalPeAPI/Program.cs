@@ -51,6 +51,13 @@ using RentalPeAPI.Monitoring.Infrastructure.Services;
 using RentalPeAPI.Monitoring.Domain.Services;
 using RentalPeAPI.Payments.Domain.Services.invoice;
 using RentalPeAPI.Payments.Domain.Services.payment;
+using RentalPeAPI.subscriptions.Application.ACL;
+using RentalPeAPI.subscriptions.Application.Internal.CommandServices;
+using RentalPeAPI.subscriptions.Application.Internal.QueryServices;
+using RentalPeAPI.subscriptions.Domain.Repositories;
+using RentalPeAPI.subscriptions.Domain.Services;
+using RentalPeAPI.subscriptions.Infrastructure.Persistence.EFC.Repositories;
+using RentalPeAPI.subscriptions.Interfaces.ACL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -149,6 +156,12 @@ builder.Services.AddScoped<ISpaceRepository, SpaceRepository>();
 builder.Services.AddScoped<IProfileRepository,       ProfileRepository>();
 builder.Services.AddScoped<IProfileCommandService,       ProfileCommandService>();
 builder.Services.AddScoped<IProfileQueryService,         ProfileQueryService>();
+
+// --- Subscriptions BC ---
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<ISubscriptionQueryService,   SubscriptionQueryService>();
+builder.Services.AddScoped<ISubscriptionsContextFacade, SubscriptionsContextFacade>();
 
 // Monitoring
 builder.Services.AddScoped<IReadingRepository,      ReadingRepository>();

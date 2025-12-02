@@ -1,9 +1,9 @@
-﻿using ACME.LearningCenterPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RentalPeAPI.Profiles.Domain.Model.Aggregates;
 using RentalPeAPI.Profiles.Domain.Model.ValueObjects;
 using RentalPeAPI.Profiles.Domain.Repositories;
 using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration;
+using RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 namespace RentalPeAPI.Profiles.Infrastructure.Persistence.EFC.Repositories;
 

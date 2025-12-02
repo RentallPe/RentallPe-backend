@@ -61,6 +61,7 @@
         <Folder Include="Report\Interfaces\ACL\" />
         <Folder Include="Report\Interfaces\REST\Resources\" />
         <Folder Include="Report\Interfaces\REST\Transform\" />
+        <Folder Include="subscriptions\Infrastructure\Interfaces\ASP\Configuration\Extensions\" />
         <Folder Include="User\Application\ACL\" />
         <Folder Include="User\Application\Internal\QueryServices\" />
         <Folder Include="User\Domain\Services\" />

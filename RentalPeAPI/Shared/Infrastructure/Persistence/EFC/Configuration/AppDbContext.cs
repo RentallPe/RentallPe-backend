@@ -5,7 +5,9 @@ using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Property.Domain.Aggregates; 
 using RentalPeAPI.Property.Domain.Aggregates.Entities; 
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; 
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration;
+using RentalPeAPI.Profiles.Infrastructure.Persistence.EFC.configuration.extensions;
 using EFCore.NamingConventions; // NECESARIO para UseSnakeCaseNamingConvention
 
 using RentalPeAPI.Combo.Domain.Aggregates.Entities;
@@ -19,10 +21,12 @@ using RentalPeAPI.User.Infrastructure.Persistence.EFC.Configuration; // Para Use
 using RentalPeAPI.Property.Domain.Aggregates; // Para Space (De derecha)
 using RentalPeAPI.Property.Domain.Aggregates.Entities; // Para Service (De derecha)
 using RentalPeAPI.Property.Infrastructure.Persistence.EFC.Configuration; // Para SpaceConfiguration (De derecha)
-using RentalPeAPI.Payment.Infrastructure.Persistence.EFC.configuration.extensions; // Para ApplyPaymentsConfiguration (De izquierda)
+// Para ApplyPaymentsConfiguration (De izquierda)
+using RentalPeAPI.Monitoring.Domain.Entities;
 using RentalPeAPI.Monitoring.Domain.Model.Aggregates;
 using RentalPeAPI.Monitoring.Infrastructure.Persistence.EFC.Configuration;
 using RentalPeAPI.Profiles.Infrastructure.Persistence.EFC.configuration.extensions;
+using RentalPeAPI.Payments.Infrastructure.Persistence.EFC.configuration.extensions;
 
 namespace RentalPeAPI.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
@@ -53,10 +57,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
-       // builder.AddCreatedUpdatedInterceptor();
+        builder.AddCreatedUpdatedInterceptor();
         base.OnConfiguring(builder);
     }
 
+    /// <summary>
+    /// Configures the model for the database context.
+    /// </summary>
+    /// <param name="builder">The model builder.</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

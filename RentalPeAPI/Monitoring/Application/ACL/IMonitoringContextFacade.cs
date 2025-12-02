@@ -1,8 +1,11 @@
-﻿// Monitoring/Interfaces/ACL/IMonitoringContextFacade.cs
+﻿
+
+
+// Monitoring/Interfaces/ACL/IMonitoringContextFacade.cs
 using System;
 using System.Threading.Tasks;
 
-namespace RentalPeAPI.Monitoring.Interfaces.ACL;
+namespace RentalPeAPI.Monitoring.Application.ACL;
 
 public interface IMonitoringContextFacade
 {

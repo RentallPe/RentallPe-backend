@@ -1,10 +1,12 @@
-﻿// Monitoring/Application/ACL/MonitoringContextFacade.cs
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using MediatR;
-using RentalPeAPI.Monitoring.Interfaces.ACL;
 
-// Alias a los commands del BC Monitoring
+
+
+namespace RentalPeAPI.Monitoring.Application.ACL;
+
+
 using CreateProjectCommand =
     RentalPeAPI.Monitoring.Application.Internal.CommandServices.CreateProjectCommand;
 using CreateIoTDeviceCommand =
@@ -14,7 +16,7 @@ using IngestReadingCommand =
 using CreateWorkItemCommand =
     RentalPeAPI.Monitoring.Application.Internal.CommandServices.CreateWorkItemCommand;
 
-namespace RentalPeAPI.Monitoring.Application.ACL;
+
 
 public class MonitoringContextFacade : IMonitoringContextFacade
 {

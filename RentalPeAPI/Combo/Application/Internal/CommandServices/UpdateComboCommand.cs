@@ -9,9 +9,9 @@ public class UpdateComboCommand
     public int InstallDays { get; }
     public string Image { get; }
     public Guid ProviderId { get; } // EDT 2025-11-15 Braulio
+    public string PlanType { get; }
 
-
-    public UpdateComboCommand(int id, string name, string description, decimal price, int installDays, string image, Guid providerId) // EDT 2025-11-15 Braulio
+    public UpdateComboCommand(int id, string name, string description, decimal price, int installDays, string image, Guid providerId,string planType) // EDT 2025-11-15 Braulio
     {
         Id = id;
         Name = name;
@@ -20,5 +20,6 @@ public class UpdateComboCommand
         InstallDays = installDays;
         Image = image;
         ProviderId = providerId; // EDT 2025-11-15 Braulio
+        PlanType = planType;
     }
 }

@@ -189,9 +189,28 @@ builder.Services.AddScoped<ProvidersContextFacade>();
 
 // Kestrel: solo HTTP para evitar warning de certificado y mixed content
 //builder.WebHost.ConfigureKestrel(o => o.ListenLocalhost(52888));
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 var app = builder.Build();
+app.UseCors("AllowFrontend");
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
+app.UseAuthorization();
+app.MapControllers();
+app.Run();
 // EnsureCreated
 using (var scope = app.Services.CreateScope())
 {

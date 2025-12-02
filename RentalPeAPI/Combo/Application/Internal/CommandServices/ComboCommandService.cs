@@ -26,7 +26,8 @@ public class ComboCommandService
             command.Price,
             command.InstallDays,
             command.Image,
-            command.ProviderId
+            command.ProviderId,
+            command.PlanType
         );
 
         await _repository.AddAsync(combo);
@@ -47,7 +48,8 @@ public class ComboCommandService
             command.Price,
             command.InstallDays,
             command.Image,
-            command.ProviderId
+            command.ProviderId,
+            command.PlanType // 👈 ahora se pasa al método Update
         );
 
         await _context.SaveChangesAsync();

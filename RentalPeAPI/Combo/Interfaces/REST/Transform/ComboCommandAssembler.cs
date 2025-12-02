@@ -12,7 +12,8 @@ public static class ComboCommandAssembler
             r.Price,
             r.InstallDays,
             r.Image,
-            r.ProviderId
+            r.ProviderId,
+            r.PlanType // 👈 ahora se pasa PlanType
         );
 
     public static UpdateComboCommand ToCommand(int id, UpdateComboResource r)
@@ -23,6 +24,7 @@ public static class ComboCommandAssembler
             r.Price,
             r.InstallDays,
             r.Image,
-            r.ProviderId
+            r.ProviderId,
+            r.PlanType // 👈 ahora se pasa PlanType
         );
 }

@@ -26,7 +26,8 @@ public class ComboAppService
             command.Price,
             command.InstallDays,
             command.Image,
-            command.ProviderId
+            command.ProviderId,
+            command.PlanType
         );
 
         await _comboRepository.AddAsync(combo);
@@ -47,7 +48,8 @@ public class ComboAppService
             command.Price,
             command.InstallDays,
             command.Image,
-            command.ProviderId
+            command.ProviderId,
+            command.PlanType
         );
 
         await _unitOfWork.CompleteAsync();

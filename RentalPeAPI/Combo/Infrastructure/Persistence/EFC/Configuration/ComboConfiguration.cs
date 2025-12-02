@@ -45,6 +45,11 @@ public class ComboConfiguration : IEntityTypeConfiguration<Domain.Aggregates.Ent
             .HasColumnName("created_at")
             .HasColumnType("timestamp")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
+        builder.Property(c => c.PlanType)
+            .HasColumnName("plan_type")
+            .IsRequired()
+            .HasMaxLength(50); // puedes ajustar el tamaño según tus necesidades
+
 
 
     }

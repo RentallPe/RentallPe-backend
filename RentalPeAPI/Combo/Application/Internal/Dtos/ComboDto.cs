@@ -12,8 +12,9 @@ public class ComboDto
     public decimal Price { get; set; }
     public int InstallDays { get; set; }
     public string Image { get; set; } = string.Empty;
+    public string PlanType { get; set; } = "basic";
 
-    public static ComboDto FromDomain(Combo combo)
+public static ComboDto FromDomain(Combo combo)
     {
         return new ComboDto
         {
@@ -23,7 +24,8 @@ public class ComboDto
             Description = combo.Description,
             Price = combo.Price,             // 👈 VO
             InstallDays = combo.InstallDays, // 👈 VO
-            Image = combo.Image               // 👈 VO
+            Image = combo.Image      ,         // 👈 VO
+            PlanType = combo.PlanType 
         };
     }
 }

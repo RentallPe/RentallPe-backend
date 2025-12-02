@@ -15,7 +15,8 @@ public static class ComboResourceAssembler
             Description = dto.Description,
             Price = dto.Price,
             InstallDays = dto.InstallDays,
-            Image = dto.Image
+            Image = dto.Image,
+            PlanType = dto.PlanType 
         };
     }
 }

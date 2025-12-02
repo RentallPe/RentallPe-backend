@@ -8,4 +8,5 @@ public class CreateComboResource
     public decimal Price { get; set; }
     public int InstallDays { get; set; }
     public string Image { get; set; } = "";
+    public string PlanType { get; set; } = "basic";
 }

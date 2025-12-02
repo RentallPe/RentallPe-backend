@@ -8,9 +8,10 @@ public class CreateComboCommand
     public int InstallDays { get; }
     public string Image { get; }
     public Guid ProviderId { get; } // EDT 2025-11-15 Braulio
+    public string PlanType { get; }
 
 
-    public CreateComboCommand(string name, string description, decimal price, int installDays, string image, Guid providerId) // EDT 2025-11-15 Braulio
+    public CreateComboCommand(string name, string description, decimal price, int installDays, string image, Guid providerId,string planType) // EDT 2025-11-15 Braulio
     {
         Name = name;
         Description = description;
@@ -18,6 +19,8 @@ public class CreateComboCommand
         InstallDays = installDays;
         Image = image;
         ProviderId = providerId; // EDT 2025-11-15 Braulio
+        PlanType = planType;
+
 
     }
 }
